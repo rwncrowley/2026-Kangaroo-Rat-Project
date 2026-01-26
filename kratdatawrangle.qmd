@@ -62,6 +62,7 @@ In this clean data, the object ID represents the \# in columns it was in its ori
 
 ```{r}
 #read excel spreadsheet edited from RAW data through excel
+library(readxl)
 clean_data_12_17 <-read_excel("cleanKratdata1217.xlsx")
 
 ```
@@ -79,3 +80,36 @@ Column: recap NA = not recap AKA a new individual
 Column: Tissue sample NA = no tissue sample was taken
 
 column: Location = WILL NEED TO BE FIGURED OUT USING GPS COORDS – will either be "FORT ORD" or "HASTINGS" based on coordinates.
+
+# Sorting out species by location
+
+The two different locations that the data is from each have a different species. In Hastings Natural Reserve there is Dipodomys Venustus and in Fort Ord natural reserve there is Dipodomys Heermanni
+
+Sorting species by the date I was collecting data at each location
+
+11/8/25 HASTINGS
+
+11/9/25 HASTINGS
+
+11/22/25 HASTINGS
+
+11/23/25 HASTINGS
+
+7/13/25 FORT ORD
+
+7/12/25 FORT ORD
+
+7/22/25 HASTINGS
+
+9/28/25 FORT ORD
+
+10/18/25 FORT ORD
+
+10/19/25 FORT ORD
+
+```{r}
+df <- clean_data_12_17
+library(tidyverse)
+df |> mutate(correct_species=case_when(CreationDate > "2025-11-7" ~ "ve", CreationDate < "2025-10-20"~"he", CreationDate == "2025-7-22"~"ve"))
+
+```
