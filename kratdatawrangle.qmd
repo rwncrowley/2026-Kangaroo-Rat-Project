@@ -1,0 +1,16 @@
+---
+title: "KRAT DATA WRANGLING!!!!"
+format: html
+editor: visual
+---
+
+## RAW DATA!!!
+
+```{r}
+#installed readxl packages with #install.packages("read.xl")
+install.packages("tidyverse")
+install.packages("read.xl")
+install.packages("Rtools")
+library(readxl)
+table1 <- read_excel("postnovRAWkratdata.xlsx")
+```
