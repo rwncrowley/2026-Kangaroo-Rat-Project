@@ -110,6 +110,39 @@ Sorting species by the date I was collecting data at each location
 ```{r}
 df <- clean_data_12_17
 library(tidyverse)
-df |> mutate(correct_species=case_when(CreationDate > "2025-11-7" ~ "ve", CreationDate < "2025-10-20"~"he", CreationDate == "2025-7-22"~"ve"))
+#Create new data frame with a new column assigning the correct species by observation date
+newdf <- df |> mutate(correct_species=case_when(CreationDate > "2025-11-7" ~ "ve", CreationDate < "2025-10-20"~"he", CreationDate == "2025-7-22"~"ve"))
+#Create code to plot to compare between species and sex
+#body length vs tail length
+ggplot(data = newdf, mapping = aes(x=Body_Length, y= Tail_Length, color = correct_species))+geom_point()
+#scale_color_manual(values = c("deeppink3","blue"))+
+#geom_smooth()
+  
+  #labs(title = "Is there sexual dimorphism in bison?",x = "age (years)", y = "weight #(kg)",color = "Sex")
+```
 
+```{r}
+#Foot length vs body length
+ggplot(data = newdf, mapping = aes(x=Body_Length, y= Foot_Length, color = correct_species))+geom_point()
+#max head width vs head length
+ggplot(data = newdf, mapping = aes(x=Maxillary_Head_Width, y= Head_Length, color = correct_species))+geom_point()
+#bolea head width vs head length
+ggplot(data = newdf, mapping = aes(x=Bolea_Head_Width, y= Head_Length, color = correct_species))+geom_point()
+#Hind limb length vs foot length
+ggplot(data = newdf, mapping = aes(x=Hind_Limb_Length, y= Foot_Length, color = correct_species))+geom_point()
+#finger length vs hand width
+ggplot(data = newdf, mapping = aes(x=Finger_Length, y= Hand_Width, color = correct_species))+geom_point()
+#finger length vs wrist width
+ggplot(data = newdf, mapping = aes(x=Finger_Length, y= Wrist_Width, color = correct_species))+geom_point()
+#Toe length vs foot width
+ggplot(data = newdf, mapping = aes(x=Toe_Length, y= Foot_Width, color = correct_species))+geom_point()
+#show foot width??? is the foot width missing a decimal in some places?!?!
+newdf$Foot_Width
+```
+
+WE HAVE A PROBLEM!!! some of the foot width cells that have values in the 40s rather than 5.0 something are not foot width but instead they are forelimb length that has been misplaced. We will have to fix this in our dataset
+
+```{r}
+#ear length vs head length
+ggplot(data = newdf, mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
 ```
