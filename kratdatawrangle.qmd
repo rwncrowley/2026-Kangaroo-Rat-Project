@@ -7,10 +7,75 @@ editor: visual
 ## RAW DATA!!!
 
 ```{r}
-#installed readxl packages with #install.packages("read.xl")
-install.packages("tidyverse")
-install.packages("read.xl")
-install.packages("Rtools")
+#installed readxl packages with #install.packages("read.xl"), & installed #rtools4.3 from online
+#using the package
 library(readxl)
+#reading my tables and assigning them to a dataframe
 table1 <- read_excel("postnovRAWkratdata.xlsx")
+library(readxl)
+table2 <- read_excel("PrenovRAWkratdata.xlsx")
+
+
 ```
+
+Goal: these tables need to be put together, combined and tidy-ed.
+
+They have different columns, table2 missing 2 diff headwidth (bullae (b or 2nd hw) and then maxillary (sometimes written as m or pm or 1st hw). Table2 also missing a tissue sample column. These values are written in the notes column in Table 2, but should be tidy in Table 1.
+
+The animal weight in table 2 if it has a - after it means it needs to have about 16-20 grams subtracted from it. Also the math needs to be done in some columns to calculate animal weight.
+
+animal weight = animal + bag weight - bag weight
+
+sometimes the bag weight is missing so we estimate it as somewhere btwn 16-20 grams.
+
+If there is an NA its because the data wasn't taken.
+
+In certain columns NA is really just a default for something:
+
+Column: repro stage NA = non-repro
+
+Column: life stage NA = adult
+
+Column: recap NA = not recap AKA a new individual
+
+Column: Tissue sample NA = no tissue sample was taken
+
+column: Location = WILL NEED TO BE FIGURED OUT USING GPS COORDS
+
+The teeth column can be deleted from both data sets, it was not used.
+
+The genus is correct for all, but the species is wrong. The species are based off of their location. We will have to use GPS coordinates to figure out species. With every krat from Fort Ord Natural Reserve, Marina, CA being a Dipodomys Heermanni (Genus: Di, Species: He) and all krats from Hastings Natural Reserve, Carmel Valley, CA being a Dipodomys Venustus (Genus: Di, Species: Ve).
+
+There are some recaps, which we have tagged and measured before and then caught again which won't have any data except location associated with them in that recap observation. In our data analysis we should select for the first capture that includes the measurements and will have to make R ok with us having a bunch of NAs in our data set.
+
+# Clean data
+
+About a month ago I went through and tidied the data via excel spreadsheets as well as combining the two tables and addressing most of the things above.
+
+It is however, still not correctly sorted on species and still contains the teeth column.
+
+It may contain some of my human errors during the excel work.
+
+It also does not have the most up to date data. There have been 2 new observations that are in the postnovkrat data (table 1) that should be added to the data.
+
+In this clean data, the object ID represents the \# in columns it was in its original table, so it can be tracked back to the RAW data.
+
+```{r}
+#read excel spreadsheet edited from RAW data through excel
+clean_data_12_17 <-read_excel("cleanKratdata1217.xlsx")
+
+```
+
+Columns to be deleted: editor, creator, teeth
+
+Columns to be edited:
+
+Column: repro stage NA = non-repro
+
+Column: life stage NA = adult
+
+Column: recap NA = not recap AKA a new individual
+
+Column: Tissue sample NA = no tissue sample was taken
+
+column: Location = WILL NEED TO BE FIGURED OUT USING GPS COORDS – will either be "FORT ORD" or "HASTINGS" based on coordinates.
