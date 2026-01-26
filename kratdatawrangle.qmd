@@ -140,7 +140,7 @@ ggplot(data = newdf, mapping = aes(x=Toe_Length, y= Foot_Width, color = correct_
 newdf$Foot_Width
 ```
 
-WE HAVE A PROBLEM!!! some of the foot width cells that have values in the 40s rather than 5.0 something are not foot width but instead they are forelimb length that has been misplaced. We will have to fix this in our dataset
+WE HAVE A PROBLEM!!! some of the foot width cells that have values in the 40s rather than 5.0 something are not foot width but instead they are forelimb length that has been misplaced. We will have to fix this in our dataset...
 
 ```{r}
 #ear length vs head length
