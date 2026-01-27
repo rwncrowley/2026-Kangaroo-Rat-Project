@@ -99,7 +99,7 @@ Sorting species by the date I was collecting data at each location
 
 7/12/25 FORT ORD
 
-7/22/25 HASTINGS
+6/22/25 HASTINGS
 
 9/28/25 FORT ORD
 
@@ -111,7 +111,16 @@ Sorting species by the date I was collecting data at each location
 df <- clean_data_12_17
 library(tidyverse)
 #Create new data frame with a new column assigning the correct species by observation date
-newdf <- df |> mutate(correct_species=case_when(CreationDate > "2025-11-7" ~ "ve", CreationDate < "2025-10-20"~"he", CreationDate == "2025-7-22"~"ve"))
+newdf <- df |> mutate(correct_species=case_when(CreationDate == "2025-11-8" ~ "ve",
+                                                CreationDate == "2025-11-9" ~ "ve",
+                                                CreationDate == "2025-11-22" ~ "ve",
+                                                CreationDate == "2025-11-23" ~ "ve",
+                                                CreationDate == "2025-6-22" ~ "ve",
+                                                CreationDate == "2025-7-12" ~ "he",
+                                                CreationDate == "2025-7-13" ~ "he",
+                                                CreationDate == "2025-10-19" ~ "he", 
+                                                CreationDate == "2025-10-18"~"he",
+                                                CreationDate == "2025-9-28" ~ "he"))
 #Create code to plot to compare between species and sex
 #body length vs tail length
 ggplot(data = newdf, mapping = aes(x=Body_Length, y= Tail_Length, color = correct_species))+geom_point()
@@ -140,9 +149,56 @@ ggplot(data = newdf, mapping = aes(x=Toe_Length, y= Foot_Width, color = correct_
 newdf$Foot_Width
 ```
 
-WE HAVE A PROBLEM!!! some of the foot width cells that have values in the 40s rather than 5.0 something are not foot width but instead they are forelimb length that has been misplaced. We will have to fix this in our dataset...
+WE HAVE A PROBLEM!!! some of the foot width cells that have values in the 40s rather than 5.0 something are not foot width but instead they are forelimb length or foot length that has been misplaced. We will have to fix this in our dataset...
 
 ```{r}
 #ear length vs head length
 ggplot(data = newdf, mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
 ```
+
+```{r}
+#seem to be catching much less males than females!!!!?!??
+#make datasets that only include Males and then only include females due to krat sexual dimorphisms
+newdf$Sex
+maledf <- newdf |> filter(Sex == "Male")
+femaledf <- newdf |> filter(Sex == "Female")
+#male krats only ear length vs head length
+ggplot(data = maledf , mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
+
+#female krats only ear-length vs head length
+ggplot(data = femaledf , mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
+#female krats only--- wondering based on this graph if FORT ORD might have venustus???? tissue samples will be interesting!!! or else heermanni are just very variable esp.in these areas. There was a paper that said that FORT ORD would be good habitat for D. Venustus
+#headlengthvs maxillary head width
+  ggplot(data = femaledf , mapping = aes(x=Head_Length, y= Maxillary_Head_Width, color = correct_species))+geom_point()
+#head length vs bolea head length
+ggplot(data = femaledf , mapping = aes(x=Bolea_Head_Width, y= Head_Length, color = correct_species))+geom_point()
+#bullae vs maxillary
+ggplot(data = femaledf , mapping = aes(x=Bolea_Head_Width, y= Maxillary_Head_Width, color = correct_species))+geom_point()
+
+#checking to make sure that species was sorted right into the correct_species column
+newdf$correct_species
+newdf$CreationDate
+Checkingsort <- newdf |> select(correct_species, CreationDate)
+Checkingsort
+#figured out I missed a date at hastings wasnt sorted into species correctly--going back to fix it-- found typo where i said 7 and not 6 OOPS
+```
+
+11/8/25 HASTINGS
+
+11/9/25 HASTINGS
+
+11/22/25 HASTINGS
+
+11/23/25 HASTINGS
+
+7/13/25 FORT ORD
+
+7/12/25 FORT ORD
+
+6/22/25 HASTINGS
+
+9/28/25 FORT ORD
+
+10/18/25 FORT ORD
+
+10/19/25 FORT ORD
