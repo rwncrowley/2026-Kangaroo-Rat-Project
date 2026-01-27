@@ -111,16 +111,13 @@ Sorting species by the date I was collecting data at each location
 df <- clean_data_12_17
 library(tidyverse)
 #Create new data frame with a new column assigning the correct species by observation date
-newdf <- df |> mutate(correct_species=case_when(CreationDate == "2025-11-8" ~ "ve",
-                                                CreationDate == "2025-11-9" ~ "ve",
-                                                CreationDate == "2025-11-22" ~ "ve",
-                                                CreationDate == "2025-11-23" ~ "ve",
-                                                CreationDate == "2025-6-22" ~ "ve",
-                                                CreationDate == "2025-7-12" ~ "he",
-                                                CreationDate == "2025-7-13" ~ "he",
-                                                CreationDate == "2025-10-19" ~ "he", 
-                                                CreationDate == "2025-10-18"~"he",
-                                                CreationDate == "2025-9-28" ~ "he"))
+newdf <- df |> mutate(correct_species=case_when(
+  CreationDate >= "2025-11-8"~"ve",
+  CreationDate >= "2025-7-12" ~ "he",
+  CreationDate <= "2025-6-22" ~ "ve"))
+Checkingsort <- newdf |> select(correct_species, CreationDate)
+Checkingsort
+#CreationDate == c("2025-7-12","2025-7-13","2025-10-19"###,"2025-10-18","2025-9-28") ~ "he"))
 #Create code to plot to compare between species and sex
 #body length vs tail length
 ggplot(data = newdf, mapping = aes(x=Body_Length, y= Tail_Length, color = correct_species))+geom_point()
