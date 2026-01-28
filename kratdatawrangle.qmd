@@ -178,24 +178,30 @@ newdf$CreationDate
 Checkingsort <- newdf |> select(correct_species, CreationDate)
 Checkingsort
 #figured out I missed a date at hastings wasnt sorted into species correctly--going back to fix it-- found typo where i said 7 and not 6 OOPS
+#changing the type of variable from a "name" to numeric bc before it was listing the numbers out of order not as continuous
+newdf$Finger_Length <- as.numeric(newdf$Finger_Length)
+newdf$Toe_Length <- as.numeric(newdf$Toe_Length)
+femaledf$Finger_Length <- as.numeric(femaledf$Finger_Length)
+femaledf$Toe_Length <- as.numeric(femaledf$Toe_Length)
+maledf$Toe_Length <- as.numeric(maledf$Toe_Length)
+maledf$Finger_Length <- as.numeric(maledf$Finger_Length)
+#New plot showing that the finger length is a new morphometric measurement which can help distinguish between these two species
+ggplot(data = newdf , mapping = aes(x=Finger_Length, y= Toe_Length, color = correct_species))+geom_point()
+#trying for each sex to see if it holds up?
+#point plots
+ggplot(data =femaledf, mapping = aes(x=Finger_Length, y= Toe_Length, color = correct_species))+geom_point()
+ggplot(data =maledf, mapping = aes(x=Finger_Length, y= Toe_Length, color = correct_species))+geom_point()
+#boxplots
+ggplot(data =femaledf, mapping = aes(x=Finger_Length,  color = correct_species))+geom_boxplot()
+ggplot(data =maledf, mapping = aes(x=Finger_Length, color = correct_species))+geom_boxplot()
+#
+newdf$Body_Length <- as.numeric(newdf$Body_Length)
+newdf$Head_Length <- as.numeric(newdf$Head_Length)
+ggplot(data = newdf, mapping = aes(x=Body_Length, y= Finger_Length, color = correct_species))+geom_point()
+
+ggplot(data = newdf, mapping = aes(x=Head_Length, y= Finger_Length, color = correct_species))+geom_point()
 ```
 
-11/8/25 HASTINGS
+The finger length measurement is a new method that may prove with further analysis to be an incredibly useful tool to tell apart these two species of kangaroo rats. Is this because the nail is longer or because the finger itself is longer????
 
-11/9/25 HASTINGS
-
-11/22/25 HASTINGS
-
-11/23/25 HASTINGS
-
-7/13/25 FORT ORD
-
-7/12/25 FORT ORD
-
-6/22/25 HASTINGS
-
-9/28/25 FORT ORD
-
-10/18/25 FORT ORD
-
-10/19/25 FORT ORD
+log all of the variables
