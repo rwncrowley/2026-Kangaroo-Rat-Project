@@ -67,3 +67,13 @@ WILL NEED TO USE SEP() OR EXCEL OR ASK MALIN FOR HELP since they are all inconsi
 We will need to combine both data sets this was in one of the lectures. They should have different column names, however if you look closer at each column they line up. In small mammal we specified that it was a KRAT measurement on anything non standard, however the standard measurements will still be needed for the observation.
 
 ex: KRAT Hand width mm –\> Hand_width
+
+### 3. Setting column types
+
+We will need to set columns as numeric, discrete, continuous, etc.
+
+Most values will be continous, but from my experience wrangling a little before they are not set as numeric and the graphs wind up having numbers out of order
+
+USE character(as.numeric or smth like it to do this
+
+## What am I missing/ need any clarifications?
