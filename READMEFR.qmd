@@ -1,0 +1,69 @@
+---
+title: "READMEFR"
+format: html
+editor: visual
+---
+
+# RC-2026-Kangaroo-Rat-Project
+
+I’m collecting data from contemporary Dipodomys heermanni goldmani populations in Fort Ord Natural Reserve, Marina CA, Strathearn Ranch Natural Reserve, East of Hollister, CA and Hastings Natural History Reservation, Carmel Valley, CA in order to see if Kangaroo rats have intraspecies habitat dependent variation.
+
+# TO MACKENZIE AND YEONU!!
+
+When trapping so far at Hastings Natural history reservation, we only found one species Dipodomys Venustus. For this Data science for EEB final project we can compare the data I have collected so far, between the dipodomys venustus at Hastings and the dipodomys Heermanni at Fort Ord.
+
+—- because I found out I only trapped DI VE at hastings but originally did not know in the field, we now have a location sorting on our data set and we will create a casewhen() to assign species based on location column either Hastings or fort ord.
+
+#### Standard measurements that everyone does when small mammal trapping are:
+
+time collection, location, recapture?, tag number, notes, Weight, sex, life stage, reproductive stage, body length, tail length, foot length, ear length
+
+#### Measurements that are new/non-standard and that I have done on KRATs is:
+
+Maxillary head width, head length, bolea head width, finger length, wrist width, hand width, forelimb length, hind limb length, foot width, toe length, tissue sample \#
+
+IGNORE teeth, we never took any data for this, we can delete these columns
+
+## CLEANING DATA:
+
+While taking data we updated our data collecting app once, this is why we have 2 data frames, the 1_29Kangaroo rat data and also 1_29Small_mammal_observations. Before we updated we wound up putting data that should have had its own column all in notes or one column in small mammal obs, so that data is VERY messy.
+
+The kangaroo rat data one is the ideal table for us, it has all of the measurements in their own columns and is pretty much clean. We will need to make the small mammal observation data table look like it and also combine them.
+
+### 1. On cleaning 1_29 small mammal obs
+
+We will need to create new columns and put the data thats all in notes or other cells into separate columns
+
+#### Exclude non dipodomys genus
+
+We will need to exclude any observation that is NOT genus = di (R might be case sensitive, so we gotta be careful)
+
+#### Columns needed: 
+
+-   BOTH Maxillary head width, bolea head width – instead of head width
+
+-   Tissue sample \#
+
+-   forelimb length
+
+USE MUTATE() FNCT
+
+#### Guidance on finding values:
+
+forelimb length values, tissue sample values, maxillary head width, bolea head width values will be in different places for each observation YIKES
+
+-   forelimb length value: either forelimb width column or notes. if its unlabeled length and in the 3.5 range it is actually a forelimb width value, if its in the 30s range its a forelimb length value
+
+-   Maxillary head width– may be labeled PM or M and it will either be in the notes column or the head width column
+
+-   Bolea head width – always labeled B, will be in notes or head width column
+
+-   Tissue sample \# will be in notes column– (we could also choose to ignore this bc its not really relevant rn)
+
+WILL NEED TO USE SEP() OR EXCEL OR ASK MALIN FOR HELP since they are all inconsistent
+
+#### 2. Putting tables together!!!
+
+We will need to combine both data sets this was in one of the lectures. They should have different column names, however if you look closer at each column they line up. In small mammal we specified that it was a KRAT measurement on anything non standard, however the standard measurements will still be needed for the observation.
+
+ex: KRAT Hand width mm –\> Hand_width
