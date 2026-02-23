@@ -62,6 +62,7 @@ In this clean data, the object ID represents the \# in columns it was in its ori
 
 ```{r}
 #read excel spreadsheet edited from RAW data through excel
+library(readxl)
 clean_data_12_17 <-read_excel("cleanKratdata1217.xlsx")
 
 ```
@@ -79,3 +80,148 @@ Column: recap NA = not recap AKA a new individual
 Column: Tissue sample NA = no tissue sample was taken
 
 column: Location = WILL NEED TO BE FIGURED OUT USING GPS COORDS – will either be "FORT ORD" or "HASTINGS" based on coordinates.
+
+# Sorting out species by location
+
+The two different locations that the data is from each have a different species. In Hastings Natural Reserve there is Dipodomys Venustus and in Fort Ord natural reserve there is Dipodomys Heermanni
+
+Sorting species by the date I was collecting data at each location
+
+11/8/25 HASTINGS
+
+11/9/25 HASTINGS
+
+11/22/25 HASTINGS
+
+11/23/25 HASTINGS
+
+7/13/25 FORT ORD
+
+7/12/25 FORT ORD
+
+6/22/25 HASTINGS
+
+9/28/25 FORT ORD
+
+10/18/25 FORT ORD
+
+10/19/25 FORT ORD
+
+```{r}
+df <- clean_data_12_17
+library(tidyverse)
+#Create new data frame with a new column assigning the correct species by observation date
+newdf <- df |> mutate(correct_species=case_when(
+  CreationDate >= "2025-11-8"~"ve",
+  CreationDate >= "2025-7-12" ~ "he",
+  CreationDate <= "2025-6-22" ~ "ve"))
+Checkingsort <- newdf |> select(correct_species, CreationDate)
+Checkingsort
+#CreationDate == c("2025-7-12","2025-7-13","2025-10-19"###,"2025-10-18","2025-9-28") ~ "he"))
+#Create code to plot to compare between species and sex
+#body length vs tail length
+ggplot(data = newdf, mapping = aes(x=Body_Length, y= Tail_Length, color = correct_species))+geom_point()
+#scale_color_manual(values = c("deeppink3","blue"))+
+#geom_smooth()
+  
+  #labs(title = "Is there sexual dimorphism in bison?",x = "age (years)", y = "weight #(kg)",color = "Sex")
+```
+
+```{r}
+#Foot length vs body length
+ggplot(data = newdf, mapping = aes(x=Body_Length, y= Foot_Length, color = correct_species))+geom_point()
+#max head width vs head length
+ggplot(data = newdf, mapping = aes(x=Maxillary_Head_Width, y= Head_Length, color = correct_species))+geom_point()
+#bolea head width vs head length
+ggplot(data = newdf, mapping = aes(x=Bolea_Head_Width, y= Head_Length, color = correct_species))+geom_point()
+#Hind limb length vs foot length
+ggplot(data = newdf, mapping = aes(x=Hind_Limb_Length, y= Foot_Length, color = correct_species))+geom_point()
+#finger length vs hand width
+ggplot(data = newdf, mapping = aes(x=Finger_Length, y= Hand_Width, color = correct_species))+geom_point()
+#finger length vs wrist width
+ggplot(data = newdf, mapping = aes(x=Finger_Length, y= Wrist_Width, color = correct_species))+geom_point()
+#Toe length vs foot width
+ggplot(data = newdf, mapping = aes(x=Toe_Length, y= Foot_Width, color = correct_species))+geom_point()
+#show foot width??? is the foot width missing a decimal in some places?!?!
+newdf$Foot_Width
+```
+
+WE HAVE A PROBLEM!!! some of the foot width cells that have values in the 40s rather than 5.0 something are not foot width but instead they are forelimb length or foot length that has been misplaced. We will have to fix this in our dataset...
+
+```{r}
+#ear length vs head length
+ggplot(data = newdf, mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
+```
+
+edddddddWE\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-0\[\[P
+
+\]\\
+
+\]'\\
+
+\\\]
+
+"'""
+
+"}
+
+\O9
+
+```{r}
+#seem to be catching much less males than females!!!!?!??
+#make datasets that only include Males and then only include females due to krat sexual dimorphisms
+newdf$Sex
+maledf <- newdf |> filter(Sex == "Male")
+femaledf <- newdf |> filter(Sex == "Female")
+#male krats only ear length vs head length
+ggplot(data = maledf , mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
+
+#female krats only ear-length vs head length
+ggplot(data = femaledf , mapping = aes(x=Ear_Length_Notch, y= Head_Length, color = correct_species))+geom_point()
+#female krats only--- wondering based on this graph if FORT ORD might have venustus???? tissue samples will be interesting!!! or else heermanni are just very variable esp.in these areas. There was a paper that said that FORT ORD would be good habitat for D. Venustus
+#headlengthvs maxillary head width
+  ggplot(data = femaledf , mapping = aes(x=Head_Length, y= Maxillary_Head_Width, color = correct_species))+geom_point()
+#head length vs bolea head length
+ggplot(data = femaledf , mapping = aes(x=Bolea_Head_Width, y= Head_Length, color = correct_species))+geom_point()
+#bullae vs maxillary
+ggplot(data = femaledf , mapping = aes(x=Bolea_Head_Width, y= Maxillary_Head_Width, color = correct_species))+geom_point()
+
+#checking to make sure that species was sorted right into the correct_species column
+newdf$correct_species
+newdf$CreationDate
+Checkingsort <- newdf |> select(correct_species, CreationDate)
+Checkingsort
+#figured out I missed a date at hastings wasnt sorted into species correctly--going back to fix it-- found typo where i said 7 and not 6 OOPS
+#changing the type of variable from a "name" to numeric bc before it was listing the numbers out of order not as continuous
+newdf$Finger_Length <- as.numeric(newdf$Finger_Length)
+newdf$Toe_Length <- as.numeric(newdf$Toe_Length)
+femaledf$Finger_Length <- as.numeric(femaledf$Finger_Length)
+femaledf$Toe_Length <- as.numeric(femaledf$Toe_Length)
+maledf$Toe_Length <- as.numeric(maledf$Toe_Length)
+maledf$Finger_Length <- as.numeric(maledf$Finger_Length)
+#New plot showing that the finger length is a new morphometric measurement which can help distinguish between these two species
+ggplot(data = newdf , mapping = aes(x=Finger_Length, y= Toe_Length, color = correct_species))+geom_point()
+#trying for each sex to see if it holds up?
+#point plots
+ggplot(data =femaledf, mapping = aes(x=Finger_Length, y= Toe_Length, color = correct_species))+geom_point()
+ggplot(data =maledf, mapping = aes(x=Finger_Length, y= Toe_Length, color = correct_species))+geom_point()
+#boxplots
+ggplot(data =femaledf, mapping = aes(x=Finger_Length,  color = correct_species))+geom_boxplot()
+ggplot(data =maledf, mapping = aes(x=Finger_Length, color = correct_species))+geom_boxplot()
+#
+newdf$Body_Length <- as.numeric(newdf$Body_Length)
+newdf$Head_Length <- as.numeric(newdf$Head_Length)
+ggplot(data = newdf, mapping = aes(x=Body_Length, y= Finger_Length, color = correct_species))+geom_point()
+
+ggplot(data = newdf, mapping = aes(x=Finger_Length, y= Head_Length, color = correct_species))+geom_point()
+
+
+ggplot(data = newdf, mapping = aes(x=Finger_Length, color = correct_species))+geom_histogram()
+
+ggplot(data = newdf, mapping = aes(x=Finger_Length, color = correct_species))+geom_boxplot()
+
+```
+
+The finger length measurement is a new method that may prove with further analysis to be an incredibly useful tool to tell apart these two species of kangaroo rats. Is this because the nail is longer or because the finger itself is longer????
+
+log all of the variables

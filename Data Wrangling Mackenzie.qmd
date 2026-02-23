@@ -1,0 +1,78 @@
+---
+title: "Mackenzie Data Wrangling"
+author: "Mackenzie Black"
+format: pdf
+editor: visual
+---
+
+## Sorting Data
+
+### load packages
+```{r}
+library(tidyverse)
+library(brms) 
+library(ggeffects)
+library(readxl)
+```
+
+
+### read in data
+```{r}
+df1 <- read_excel("1_29Kangaroo Rat Data_TableToExcel.xlsx")
+
+df2 <- read_excel("1_29Small_Mammal_Observations_TableToExcel.xlsx")
+
+```
+
+
+### cleaning df1
+```{r}
+df1_clean <- df1 %>% select(-c(OBJECTID:Tissue_Sample, Teeth))
+
+head(df1_clean)
+```
+
+### Cleaning df2
+```{r}
+df2_clean <- df2 %>% select(-c(OBJECTID:NOTES))
+
+head(df2_clean)
+
+#filtering for di genus
+df2_clean<- df2_clean %>% filter(genus == "Di"|genus == "di")
+
+#renaming column names
+
+df2_clean <- df2_clean %>% 
+  rename(
+    Toe_Length =  KRAT_Hind_Toe_Length,
+    Hind_Limb_Length = KRAT_Hind_Limb_Length,
+    Foot_Width = KRAT_Foot_Width_mm,
+    Foot_Length = KRAT_Foot_Length_mm, 
+    Hand_Width = KRAT_Hand_Width_mm,
+    Finger_Length = KRAT_Finger_Length,
+    Wrist_Width = KRAT_Wrist_Width_mm,
+    Body_Length = Body_mm,
+    Tail_Length = Tail_mm,
+    Ear_Length_Notch = Ear_mm,
+    Genus = genus)
+    
+names(df2_clean)
+```
+
+
+### Combining dataframes
+```{r}
+df_joined <- df1_clean %>%
+  left_join(df2_clean, by = c("Toe_Length", "Hind_Limb_Length", "Foot_Width",
+                              "Foot_Length", "Hand_Width","Finger_Length",
+                              "Wrist_Width", "Body_Length", "Tail_Length",
+                              "Ear_Length_Notch", "Sex", "Life_Stage", "Genus" ))
+
+```
+further cleaning of df_joined
+```{r}
+df_joined <- df_joined %>% 
+  select(-c(KRAT_Teeth))
+```
+
