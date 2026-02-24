@@ -103,3 +103,29 @@ whateverdf <- filter(case_when(c))
 #make new column (correct_species) using casewhen function to sort by location column.location = 'Fort ord' ~ 'he', location = 'Hastings' ~ "ve"
 ```
 
+
+
+## Setting Up Linear Model
+```{r}
+class(df_joined$Body_Length)
+df_joined$Body_Length <- as.numeric(df_joined$Body_Length)
+df_joined$Head_Length <- as.numeric(df_joined$Head_Length)
+
+
+
+#additive model for Body Length based on species and head length
+m.head.body.length.additive <-
+brm(data = df_joined,
+family = gaussian,
+Body_Length ~ 0 + Species +
+Head_Length,
+iter = 2000, warmup = 1000, chains = 4, cores = 4, seed = 4,
+file = "output/m.head.body.length.additive")
+
+summary(m.head.body.length.additive)
+```
+
+```{r}
+
+```
+
