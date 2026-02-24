@@ -1,3 +1,4 @@
+
 ---
 title: "Mackenzie Data Wrangling"
 author: "Mackenzie Black"
@@ -83,6 +84,7 @@ head(df_joined)
 df_joined <- df_joined %>% select(-c(KRAT_Forelimb_Width_mm, KRAT_Head_Width_mm,
                                     Animal_y_n, Bait_Stolen_y_n ))
 
+head(df_joined)
 ```
 
 Preliminary graphing
