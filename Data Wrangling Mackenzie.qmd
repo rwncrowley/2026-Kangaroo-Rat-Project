@@ -8,6 +8,7 @@ editor: visual
 ## Sorting Data
 
 ### load packages
+
 ```{r}
 library(tidyverse)
 library(brms) 
@@ -15,8 +16,8 @@ library(ggeffects)
 library(readxl)
 ```
 
-
 ### read in data
+
 ```{r}
 df1 <- read_excel("1_29Kangaroo Rat Data_TableToExcel.xlsx")
 
@@ -24,8 +25,8 @@ df2 <- read_excel("1_29Small_Mammal_Observations_TableToExcel.xlsx")
 
 ```
 
-
 ### cleaning df1
+
 ```{r}
 df1_clean <- df1 %>% select(-c(OBJECTID:Tissue_Sample, Teeth))
 
@@ -33,6 +34,7 @@ head(df1_clean)
 ```
 
 ### Cleaning df2
+
 ```{r}
 df2_clean <- df2 %>% select(-c(OBJECTID:NOTES))
 
@@ -60,8 +62,8 @@ df2_clean <- df2_clean %>%
 names(df2_clean)
 ```
 
-
 ### Combining dataframes
+
 ```{r}
 df_joined <- df1_clean %>%
   left_join(df2_clean, by = c("Toe_Length", "Hind_Limb_Length", "Foot_Width",
@@ -70,9 +72,10 @@ df_joined <- df1_clean %>%
                               "Ear_Length_Notch", "Sex", "Life_Stage", "Genus" ))
 
 ```
+
 further cleaning of df_joined
+
 ```{r}
 df_joined <- df_joined %>% 
   select(-c(KRAT_Teeth))
 ```
-

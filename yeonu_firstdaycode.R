@@ -1,4 +1,4 @@
-install.packages("readxl")
+
 library(readxl)
 my_data <- read_excel("cleanKratdata1217.xlsx")
 unique(as.Date(my_data$EditDate))
