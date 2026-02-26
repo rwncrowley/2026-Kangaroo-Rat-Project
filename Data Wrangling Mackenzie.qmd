@@ -1,4 +1,3 @@
-
 ---
 title: "Mackenzie Data Wrangling"
 author: "Mackenzie Black"
@@ -78,8 +77,8 @@ head(df_joined)
 
 ```
 
-
 ### cleaning df_joined
+
 ```{r}
 df_joined <- df_joined %>% select(-c(KRAT_Forelimb_Width_mm, KRAT_Head_Width_mm,
                                     Animal_y_n, Bait_Stolen_y_n ))
@@ -96,16 +95,15 @@ df_joined %>%
   geom_point()
 ```
 
-
 case when for determining species
-```{reval=FALSE}
+
+``` {reval="FALSE"}
 whateverdf <- filter(case_when(c))
 #make new column (correct_species) using casewhen function to sort by location column.location = 'Fort ord' ~ 'he', location = 'Hastings' ~ "ve"
 ```
 
-
-
 ## Setting Up Linear Model
+
 ```{r}
 class(df_joined$Body_Length)
 df_joined$Body_Length <- as.numeric(df_joined$Body_Length)
@@ -128,4 +126,3 @@ summary(m.head.body.length.additive)
 ```{r}
 
 ```
-
