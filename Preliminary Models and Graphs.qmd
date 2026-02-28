@@ -1,0 +1,16 @@
+---
+title: "Preliminary Models and Graphs"
+author: "Mackenzie"
+format: pdf
+editor: visual
+---
+
+## Looking into the combined data frame
+```{r}
+library(tidyverse)
+library(brms) 
+library(ggeffects)
+library(readxl)
+```
+
+Make sure to run the code for the Data Frame final_krat_data
