@@ -1,0 +1,31 @@
+---
+title: "two variables modeling"
+author: "Yeonu"
+format: html
+editor: visual
+---
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Head_Length/Body_Length, y = Body_Length, color = Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Hind_Limb_Length/Body_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Toe_Length/Body_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Tail_Length/Body_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
