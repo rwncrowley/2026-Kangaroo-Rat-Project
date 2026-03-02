@@ -88,7 +88,7 @@ This one doesn't seem helpful
 #Head length on Ear Notch
 final_krat_data %>%
   ggplot(aes(x=Head_Length, y = Ear_Length_Notch, color = Species))+
-  geom_point()+geom_smooth(method = "lm")
+  geom_point()+geom_smooth(method = "lm")+ylim(0,21)
 ```
 
 I'm not sure what happened here, but I don't think we should use it
@@ -111,7 +111,13 @@ final_krat_data %>%
 ```{r}
 #Head length on Tail Length
 final_krat_data %>%
-  ggplot(aes(x=Head_Length, y = Tail_Length, color = Species))+
+  ggplot(aes(x= Head_Length, y = Tail_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
+```{r}
+#Finger length vs Head length
+final_krat_data %>%
+  ggplot(aes(x=Head_Length, y = Finger_Length, color = Species))+
   geom_point()+geom_smooth(method = "lm")
 ```
 
