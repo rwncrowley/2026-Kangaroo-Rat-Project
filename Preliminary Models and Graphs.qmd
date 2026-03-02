@@ -169,3 +169,58 @@ summary(m.head.tail.length.interactive)
 plot(m.head.tail.length.interactive)
 ```
 It looks like this model ran well, but the CI for both slopes includes zero
+
+
+
+```{r}
+#additive model for The effect of Head length by species on Tail length
+m.head.tail.body.length.additive <-
+brm(data = final_krat_data,
+family = gaussian,
+Tail_Length ~ 0 + Species +
+Head_Length + Body_Length,
+iter = 2000, warmup = 1000, chains = 4, cores = 4, seed = 4,
+file = "output/m.head.tail.body.length.additive")
+
+summary(m.head.tail.body.length.additive)
+```
+
+
+
+
+
+```{r}
+#Using a categorical model to predict species using head length and tail length
+#bernoulli family better bc 2 categories???
+m.cat.head.tail <- brm(data = final_krat_data, 
+                       formula = Species ~ Head_Length + Tail_Length,
+                       family = categorical(link = "logit"), 
+                       chains = 4, iter= 2000, 
+                       file = "output/m.cat.head.tail")
+```
+```{r}
+summary(m.cat.head.tail)
+```
+
+```{r}
+plot(m.cat.head.tail)
+```
+```{r}
+#bernoulli family better bc 2 categories???
+m.bern.head.tail <- brm(data = final_krat_data, 
+                       formula = Species ~ Head_Length + Tail_Length,
+                       family = bernoulli(link = "logit"), 
+                       chains = 4, iter= 2000, 
+                       file = "output/m.bern.head.tail")
+
+summary(m.bern.head.tail)
+```
+
+```{r}
+plot(m.bern.head.tail)
+```
+```{r}
+#conditional_effects(m.bern.head.tail) %>% plot()
+#this code didn't work for some reason
+```
+
