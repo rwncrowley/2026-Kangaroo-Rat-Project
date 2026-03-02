@@ -38,7 +38,7 @@ We will need to create new columns and put the data thats all in notes or other 
 
 We will need to exclude any observation that is NOT genus = di (R might be case sensitive, so we gotta be careful)
 
-#### Columns needed: 
+#### Columns needed:
 
 -   BOTH Maxillary head width, bolea head width – instead of head width
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Mackenzie Data Wrangling"
 author: "Mackenzie Black"
@@ -79,3 +80,136 @@ further cleaning of df_joined
 df_joined <- df_joined %>% 
   select(-c(KRAT_Teeth))
 ```
+=======
+
+---
+title: "Mackenzie Data Wrangling"
+author: "Mackenzie Black"
+format: pdf
+editor: visual
+---
+
+## Sorting Data
+
+### load packages
+
+```{r}
+library(tidyverse)
+library(brms) 
+library(ggeffects)
+library(readxl)
+```
+
+### read in data
+
+```{r}
+df1 <- read_excel("1_29Kangaroo Rat Data_TableToExcel.xlsx")
+
+df2 <- read_excel("1_29Small_Mammal_Observations_TableToExcel.xlsx")
+head(df2)
+```
+
+### cleaning df1
+
+```{r}
+df1_clean <- df1 %>% select(-c(OBJECTID:Tissue_Sample, Teeth))
+
+head(df1_clean)
+```
+
+### Cleaning df2
+
+```{r}
+df2_clean <- df2 %>% select(-c(OBJECTID:NOTES, KRAT_Teeth))
+
+head(df2_clean)
+
+#filtering for di genus
+df2_clean<- df2_clean %>% filter(genus == "Di"|genus == "di")
+
+#renaming column names
+
+df2_clean <- df2_clean %>% 
+  rename(
+    Toe_Length =  KRAT_Hind_Toe_Length,
+    Hind_Limb_Length = KRAT_Hind_Limb_Length,
+    Foot_Width = KRAT_Foot_Width_mm,
+    Foot_Length = KRAT_Foot_Length_mm, 
+    Hand_Width = KRAT_Hand_Width_mm,
+    Finger_Length = KRAT_Finger_Length,
+    Wrist_Width = KRAT_Wrist_Width_mm,
+    Body_Length = Body_mm,
+    Tail_Length = Tail_mm,
+    Ear_Length_Notch = Ear_mm,
+    Genus = genus,
+    Head_Length = KRAT_Head_Length_mm,
+    Tag = Tag_Number)
+    
+names(df2_clean)
+```
+
+### Combining data frames
+
+```{r}
+df_joined <- df1_clean %>%
+  left_join(df2_clean, by = c("Toe_Length", "Hind_Limb_Length", "Foot_Width",
+                              "Foot_Length", "Hand_Width","Finger_Length",
+                              "Wrist_Width", "Body_Length", "Tail_Length",
+                              "Ear_Length_Notch", "Sex", "Life_Stage", "Genus",
+                              "Head_Length", "Tag"))
+head(df_joined)
+
+```
+
+
+### cleaning df_joined
+```{r}
+df_joined <- df_joined %>% select(-c(KRAT_Forelimb_Width_mm, KRAT_Head_Width_mm,
+                                    Animal_y_n, Bait_Stolen_y_n ))
+
+head(df_joined)
+```
+
+Preliminary graphing
+
+```{r}
+
+df_joined %>%
+  ggplot(aes(x=Foot_Length, y = Toe_Length, color = Species))+
+  geom_point()
+```
+
+
+case when for determining species
+```{reval=FALSE}
+whateverdf <- filter(case_when(c))
+#make new column (correct_species) using casewhen function to sort by location column.location = 'Fort ord' ~ 'he', location = 'Hastings' ~ "ve"
+```
+
+
+
+## Setting Up Linear Model
+```{r}
+class(df_joined$Body_Length)
+df_joined$Body_Length <- as.numeric(df_joined$Body_Length)
+df_joined$Head_Length <- as.numeric(df_joined$Head_Length)
+
+
+
+#additive model for Body Length based on species and head length
+m.head.body.length.additive <-
+brm(data = df_joined,
+family = gaussian,
+Body_Length ~ 0 + Species +
+Head_Length,
+iter = 2000, warmup = 1000, chains = 4, cores = 4, seed = 4,
+file = "output/m.head.body.length.additive")
+
+summary(m.head.body.length.additive)
+```
+
+```{r}
+
+```
+
+>>>>>>> a74d421c149d0de8ac88857379510a17e2cc52c4

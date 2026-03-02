@@ -107,6 +107,10 @@ final_krat_data <- final_krat_data %>%
   )) %>%
   # 2. Ensure all measurement columns are numeric to prevent plotting errors
   mutate(across(c(contains("Length"), contains("Width"), contains("Weight")), as.numeric))
+
+# install.packages("readr")
+library(readr)
+write_csv(final_krat_data, "final_krat_data_2026.csv")
 ```
 
 ### 
