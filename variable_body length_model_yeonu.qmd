@@ -6,26 +6,154 @@ editor: visual
 ---
 
 ```{r}
+#Head Length/Body_Length graph
 final_krat_data %>%
-  ggplot(aes(x=Head_Length/Body_Length, y = Body_Length, color = Species))+
+  ggplot(aes(y=Head_Length/Body_Length, x = Body_Length, color =  Species))+
   geom_point()+
   geom_smooth(method = "lm")
 ```
 
 ```{r}
+#species+sex graph
 final_krat_data %>%
-  ggplot(aes(x=Body_Length, y = Hind_Limb_Length/Body_Length, color = Species))+
-  geom_point()+geom_smooth(method = "lm")
+  ggplot(aes(x = Body_Length, 
+             y = Hind_Limb_Length / Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",                     
+       y = "Relative Hind Limb Length")
 ```
 
 ```{r}
+#making heal_length/body_length variables
+divide_krat_data<- final_krat_data %>%
+    mutate(Relative_Head_Length = Head_Length / Body_Length)
+
+#Running model
+m.relhead.body2 <- brm(Species ~ Body_Length + Relative_Head_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhead.body") 
+
+#Running model
+m.relhead.body <- brm(Species ~ Body_Length + Relative_Head_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhead.body") 
+#summary model
+summary(m.relhead.body)
+```
+
+With summary, it's good model!
+
+```{r}
+plot(m.relhead.body)
+```
+
+```{r}
+preds.add <- predict_response(m.relhead.body)
+
+plot(preds.add, show_data = TRUE)
+```
+
+```{r}
+pp_check(m.relhead.body, type="scatter_avg")
+```
+
+```{r}
+fitted(m.relhead.body)
+```
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Hind_Limb_Length/Body_Length, color = Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Hind_Limb_Length/Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",                     
+       y = "Relative Hind Limb Length")
+```
+
+```{r}
+#making hind_limb_length/body_length variables
+divide_krat_data<- final_krat_data %>%
+    mutate(Relative_Limb_Length = Hind_Limb_Length / Body_Length)
+
+#Running model
+m.relhindlimb.body <- brm(Species ~ Body_Length + Relative_Limb_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhindlimb.body") 
+#summary model
+summary(m.relhindlimb.body)
+```
+
+```{r}
+plot(m.relhindlimb.body)
+```
+
+```{r}
+#Toe Length/Body length graph
 final_krat_data %>%
   ggplot(aes(x=Body_Length, y = Toe_Length/Body_Length, color = Species))+
   geom_point()+geom_smooth(method = "lm")
 ```
 
 ```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x = Body_Length, 
+             y = Toe_Length/Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",      )
+```
+
+```{r}
 final_krat_data %>%
   ggplot(aes(x=Body_Length, y = Tail_Length/Body_Length, color = Species))+
   geom_point()+geom_smooth(method = "lm")
+```
+
+```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Tail_Length/Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",     )
+```
+
+```{r}
+#making tail_length/body_length variables
+divide_krat_data<- final_krat_data %>%
+    mutate(Relative_Tail_Length = Tail_Length / Body_Length)
+
+#Running model
+m.reltail.body <- brm(Species ~ Body_Length + Relative_Tail_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.reltail.body") 
+#summary model
+summary(m.relhead.body)
+```
+
+```{r}
+plot(m.relhead.body)
+
 ```
