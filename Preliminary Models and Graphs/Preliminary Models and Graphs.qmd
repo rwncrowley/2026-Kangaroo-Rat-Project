@@ -6,6 +6,7 @@ editor: visual
 ---
 
 ## Looking into the combined data frame
+
 ```{r}
 library(tidyverse)
 library(brms) 
@@ -15,13 +16,13 @@ library(here)
 ```
 
 ## Make sure to read in the code for the Data Frame final_krat_data
+
 ```{r}
 final_krat_data <- read.csv("final_krat_data_2026.csv")
 ```
 
-
-
 I don't think there is enough separation between species to be useful in this one
+
 ```{r}
 # Foot Length on Toe Length
 final_krat_data %>%
@@ -30,6 +31,7 @@ final_krat_data %>%
 ```
 
 This could be helpful but very few data points
+
 ```{r}
 #Head Length on Bolea Head Width 
 final_krat_data %>%
@@ -37,8 +39,8 @@ final_krat_data %>%
   geom_point()+geom_smooth(method = "lm")
 ```
 
-
 This shows a trend but has a very wide range, so I'm not sure that we can trust the association
+
 ```{r}
 # Head Length on Maxillary Head Width
 final_krat_data %>%
@@ -47,6 +49,7 @@ final_krat_data %>%
 ```
 
 Mostly very clustered points, doesn't show much
+
 ```{r}
 # Head Length on Body Length
 final_krat_data %>%
@@ -54,8 +57,8 @@ final_krat_data %>%
   geom_point()+geom_smooth(method = "lm")
 ```
 
-
 Mostly very clustered points, doesn't show much
+
 ```{r}
 #Head Length on Hind Limb Length 
 final_krat_data %>%
@@ -63,8 +66,8 @@ final_krat_data %>%
   geom_point()+geom_smooth(method = "lm")
 ```
 
+I don't think this is very helpful
 
-I don't think this is very helpful 
 ```{r}
 #Head length on Hand width
 final_krat_data %>%
@@ -73,6 +76,7 @@ final_krat_data %>%
 ```
 
 There aren't many venustus body lengths
+
 ```{r}
 #Hind Limb Length on Body Length
 final_krat_data %>%
@@ -81,6 +85,7 @@ final_krat_data %>%
 ```
 
 I don't think there is enough data here
+
 ```{r}
 #Foot Length on Toe Length
 final_krat_data %>%
@@ -89,6 +94,7 @@ final_krat_data %>%
 ```
 
 This one doesn't seem helpful
+
 ```{r}
 #Head length on Ear Notch
 final_krat_data %>%
@@ -97,6 +103,7 @@ final_krat_data %>%
 ```
 
 I'm not sure what happened here, but I don't think we should use it
+
 ```{r}
 #Wrist Width on Hand width
 final_krat_data %>%
@@ -104,8 +111,8 @@ final_krat_data %>%
   geom_point()+geom_smooth(method = "lm")
 ```
 
-
 These next two could end up being useful. It seems like there are different trends between the species
+
 ```{r}
 #Body length on Tail Length
 final_krat_data %>%
@@ -119,6 +126,7 @@ final_krat_data %>%
   ggplot(aes(x= Head_Length, y = Tail_Length, color = Species))+
   geom_point()+geom_smooth(method = "lm")
 ```
+
 ```{r}
 #Finger length vs Head length
 final_krat_data %>%
@@ -126,8 +134,8 @@ final_krat_data %>%
   geom_point()+geom_smooth(method = "lm")
 ```
 
-
 # Testing Models
+
 ```{r}
 #checking how R identified the columns
 class(final_krat_data$Head_Length)
@@ -145,10 +153,10 @@ file = "output/m.head.tail.length.additive")
 #Assessing the model
 summary(m.head.tail.length.additive)
 ```
+
 ```{r}
 plot(m.head.tail.length.additive)
 ```
-
 
 ```{r}
 #Testing the interactive model of Head Length and Tail Length
@@ -166,16 +174,17 @@ iter = 2000, warmup = 1000, chains = 4, cores = 4,
 seed = 4,
 file = "output/m.head.tail.length.interactive")
 ```
+
 ```{r}
 #assessing the interactive model of Head Length and Tail Length
 summary(m.head.tail.length.interactive)
 ```
+
 ```{r}
 plot(m.head.tail.length.interactive)
 ```
+
 It looks like this model ran well, but the CI for both slopes includes zero
-
-
 
 ```{r}
 #additive model for The effect of Head length by species on Tail length
@@ -190,10 +199,6 @@ file = "output/m.head.tail.body.length.additive")
 summary(m.head.tail.body.length.additive)
 ```
 
-
-
-
-
 ```{r}
 #Using a categorical model to predict species using head length and tail length
 #bernoulli family better bc 2 categories???
@@ -203,6 +208,7 @@ m.cat.head.tail <- brm(data = final_krat_data,
                        chains = 4, iter= 2000, 
                        file = "output/m.cat.head.tail")
 ```
+
 ```{r}
 summary(m.cat.head.tail)
 ```
@@ -210,6 +216,7 @@ summary(m.cat.head.tail)
 ```{r}
 plot(m.cat.head.tail)
 ```
+
 ```{r}
 #bernoulli family better bc 2 categories???
 m.bern.head.tail <- brm(data = final_krat_data, 
@@ -224,10 +231,12 @@ summary(m.bern.head.tail)
 ```{r}
 plot(m.bern.head.tail)
 ```
+
 ```{r}
 #conditional_effects(m.bern.head.tail) %>% plot()
 #this code didn't work for some reason
 ```
+
 ```{r}
 #Comparative model for head length and body length ratio on species 
 
@@ -241,7 +250,6 @@ summary(m.bern.head/body.tail)
 
 ```
 
-
 ```{r}
 #Comparative model for head length and body length ratio on species with tail length
 
@@ -254,4 +262,3 @@ m.bern.head/body.tail <- brm(data = final_krat_data,
 summary(m.bern.head/body.tail)
 
 ```
-
