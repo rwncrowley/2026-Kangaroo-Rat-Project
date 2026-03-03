@@ -1,0 +1,220 @@
+---
+title: "two variables modeling"
+author: "Yeonu"
+format: html
+editor: visual
+---
+
+# 1. Head Length/Body Length
+
+```{r}
+#Head Length/Body_Length graph
+final_krat_data %>%
+  ggplot(aes(y=Head_Length/Body_Length, x = Body_Length, color =  Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x = Body_Length, 
+             y = Hind_Limb_Length / Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",                     
+       y = "Relative Hind Limb Length")
+```
+
+## Run Model & Evaluate
+
+```{r}
+#making heal_length/body_length variables
+divide_krat_data<- final_krat_data %>%
+    mutate(Relative_Head_Length = Head_Length / Body_Length)
+
+#Running model
+m.relhead.body2 <- brm(Species ~ Body_Length + Relative_Head_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhead.body") 
+
+#Running model
+m.relhead.body <- brm(Species ~ Body_Length + Relative_Head_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhead.body") 
+#summary model
+summary(m.relhead.body)
+```
+
+```{r}
+levels(as.factor(divide_krat_data$Species))
+```
+
+With summary, it's good model!
+
+```{r}
+plot(m.relhead.body)
+```
+
+```{r}
+preds.add <- predict_response(m.relhead.body)
+
+plot(preds.add, show_data = TRUE)
+```
+
+```{r}
+pp_check(m.relhead.body, type="scatter_avg")
+```
+
+```{r}
+fitted(m.relhead.body)
+```
+
+# 2. Hind limb length / Body Length
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Hind_Limb_Length/Body_Length, color = Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Hind_Limb_Length/Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",                     
+       y = "Relative Hind Limb Length")
+```
+
+```{r}
+#making hind_limb_length/body_length variables
+divide_krat_data<- final_krat_data %>%
+    mutate(Relative_Limb_Length = Hind_Limb_Length / Body_Length)
+
+#Running model
+m.relhindlimb.body <- brm(Species ~ Body_Length + Relative_Limb_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhindlimb.body") 
+#summary model
+summary(m.relhindlimb.body)
+```
+
+```{r}
+plot(m.relhindlimb.body)
+```
+
+```{r}
+pp_check(m.relhindlimb.body, type="scatter_avg")
+```
+
+# 3. Toe Length / Body length (not gonna make it to model)
+
+```{r}
+#Toe Length/Body length graph
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Toe_Length/Body_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
+
+```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x = Body_Length, 
+             y = Toe_Length/Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",      )
+```
+
+# 4. Tail Length/Body length
+
+```{r}
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Tail_Length/Body_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
+
+```{r}
+#species+sex graph
+final_krat_data %>%
+  ggplot(aes(x=Body_Length, y = Tail_Length/Body_Length, 
+             color = interaction(Sex, Species))) +  
+  geom_point() +                         
+  geom_smooth(method = "lm") +          
+  labs(color = "Sex & Species",     )
+```
+
+```{r}
+#making tail_length/body_length variables
+divide_krat_data<- final_krat_data %>%
+    mutate(Relative_Tail_Length = Tail_Length / Body_Length)
+
+#Running model
+m.reltail.body <- brm(Species ~ Body_Length + Relative_Tail_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.reltail.body") 
+#summary model
+summary(m.relhead.body)
+```
+
+```{r}
+plot(m.relhead.body)
+```
+
+# Making function! (Processing.......)
+
+```{r eval=FALSE}
+#I want to make function to run the model for each variables
+run_relative_krat_model <- function(data, x_var, y_var, model_name) {
+  
+  #Making relative_value variable
+  #!!!!I'm gonna divide like y/x
+  data_processed <- data %>%
+    mutate(Relative_Value = {{ y_var }} / {{ x_var }})
+  
+  formula_obj <- as.formula(paste("Species ~", x_var, "+ Relative_Value"))
+    cat("\n Start modeling ", model_name, "\n")
+  
+  model <- brm(
+    formula = formula_obj,
+    data = data_processed,
+    family = bernoulli(),
+    chains = 4, iter = 2000,
+    file = paste0("output/", model_name)
+  )
+  
+  # show summary of model
+  cat("\n summary:\n")
+  print(summary(model))
+  
+  cat("\n plot \n")
+  # plot
+  plot(model)
+  
+  # ggeffects
+  preds <- predict_response(model, terms = c(substitute(x_var), "Relative_Value"))
+  print(plot(preds, show_data = TRUE) + labs(title = paste("Model:", model_name)))
+  
+  # PP Check
+  print(pp_check(fit, type = "scatter_avg"))
+  
+  
+  return(model)
+}
+
+run_relative_krat_model(final_krat_data,Foot_Length, Body_Length, "m.relfoot.body")
+```
