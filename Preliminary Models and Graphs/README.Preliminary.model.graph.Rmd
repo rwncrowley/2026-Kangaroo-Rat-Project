@@ -1,0 +1,80 @@
+---
+title: "README: Preliminary Models and Graphs"
+output: html_document
+---
+
+```{r message=FALSE, warning=FALSE}
+#Necessary Packages and Data
+library(tidyverse)
+library(brms) 
+library(ggeffects)
+library(readxl)
+library(here)
+
+final_krat_data <- read.csv(here("output/final_krat_data_2026.csv"))
+```
+
+# Preliminary Models and Graphs
+The Quarto documents in this folder show analysis done on the final_krat_data. 
+(The cleaned data frame). Graphs were started by showing the relationship 
+between two variables and separating by species. Some simple models were run on 
+these graphs to quantify the relationships. An example of the code for a 
+preliminary graph is shown below.
+
+
+
+```{r warning=FALSE}
+#Hind Limb Length on Body Length
+final_krat_data %>%
+  ggplot(aes(x=Hind_Limb_Length, y = Body_Length, color = Species))+
+  geom_point()+geom_smooth(method = "lm")
+```
+
+
+## Initial Models
+Some of the initial models used both the Gaussian and Categorical families in the brms package. 
+
+```{reval=FALSE}
+#Gaussian Family Model
+m.head.tail.length.additive <-
+brm(data = final_krat_data,
+family = gaussian,
+Tail_Length ~ 0 + Species +
+Head_Length,
+iter = 2000, warmup = 1000, chains = 4, cores = 4, seed = 4,
+file = "output/m.head.tail.length.additive")
+
+#Categorical Family Model
+m.cat.head.tail <- brm(data = final_krat_data, 
+                       formula = Species ~ Head_Length + Tail_Length,
+                       family = categorical(link = "logit"), 
+                       chains = 4, iter= 2000, 
+                       file = "output/m.cat.head.tail")
+```
+
+
+## Updated Graphs
+It was later determined to use Head Length divided by Body Length as a proxy for 
+body size. The values given were compared to different variables and separated 
+by species. An example graph code is shown below
+
+```{r warning=FALSE}
+#Head Length/Body_Length graph
+final_krat_data %>%
+  ggplot(aes(y=Head_Length/Body_Length, x = Body_Length, color =  Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+## Updated Models
+A new column called Relative_Head_Length was created for this proxy and was used 
+to run models as the example below shows. The best morphological measurements 
+for predictors of species were determined by these models.
+```{reval=FALSE}
+m.relhead.body <- brm(Species ~ Body_Length + Relative_Head_Length, 
+                        data = divide_krat_data, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.relhead.body")
+```
+
