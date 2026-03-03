@@ -1,0 +1,13 @@
+---
+title: "Unused Data Wrangling and Exploration"
+output: html_document
+---
+
+
+These documents were created as a way to start exploring and organizing our 
+Kangaroo Rat Data before the best way to wrangle the data had been determined.
+Some of the Quarto documents use a slightly different data set than what
+was used for the analysis, as more data was added after the fact. 
+
+Some components from the Data Wrangling Mackenzie qmd were used in the creation 
+of the final data frame (located in the output folder).
