@@ -10,6 +10,7 @@ two different times and locations. The data frames were joined into one
 named final_krat_data in order to anaylze the relationships shown for 
 each species. 
 
+
 ## Reading in the Data
 
 The necessary packages were read in using the library function as shown below
@@ -27,21 +28,28 @@ df1 <- read_excel("1_29Kangaroo Rat Data_TableToExcel.xlsx")
 df2 <- read_excel("1_29Small_Mammal_Observations_TableToExcel.xlsx") 
 ``` 
 
+
 ## Sorting Columns and Column Names
 
 The genus Di was filtered for. Next, cells with two values were separated into 
-the appropriate columns. Column names in one data frame were then renamed to match the names in the second for proper joining. All numeric valued columns were changed to the class numeric in R by using the as.numeric function
+the appropriate columns. Column names in one data frame were then renamed to 
+match the names in the second for proper joining. All numeric valued columns 
+were changed to the class numeric in R by using the as.numeric function.
+
 
 ## Combining Data Frames
 
-The two data frames were combined using bindrows on both of the dataframes as shown below
+The two data frames were combined using bindrows on both of the dataframes as 
+shown below
 ```{reval=FALSE}
 final_krat_data <- bind_rows(df1_numeric, df2_numeric)
 ```
 
+
 ## Species By Location
 
-To ensure that the species were properly identified, species were assigned based on the location they were found. 
+To ensure that the species were properly identified, species were assigned based 
+on the location they were found. 
 ```{reval=False}
 #Species assignment & Type Conversion
 final_krat_data <- final_krat_data %>%
@@ -55,8 +63,10 @@ final_krat_data <- final_krat_data %>%
   mutate(across(c(contains("Length"), contains("Width"), contains("Weight")), as.numeric))
 ```
 
+
 ## Data Output
-The new data frame was then made into a csv that is stored in the output folder. This data frame is used on subsequent analyses. 
+The new data frame was then made into a csv that is stored in the output folder. 
+This data frame is used on subsequent analyses. 
 
 
 
