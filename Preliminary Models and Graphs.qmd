@@ -11,9 +11,14 @@ library(tidyverse)
 library(brms) 
 library(ggeffects)
 library(readxl)
+library(here)
 ```
 
-## Make sure to run the code for the Data Frame final_krat_data
+## Make sure to read in the code for the Data Frame final_krat_data
+```{r}
+final_krat_data <- read.csv("final_krat_data_2026.csv")
+```
+
 
 
 I don't think there is enough separation between species to be useful in this one
@@ -222,5 +227,31 @@ plot(m.bern.head.tail)
 ```{r}
 #conditional_effects(m.bern.head.tail) %>% plot()
 #this code didn't work for some reason
+```
+```{r}
+#Comparative model for head length and body length ratio on species 
+
+m.bern.head/body.tail <- brm(data = final_krat_data, 
+                       formula = Species ~ (Head_Length/Body_Length),
+                       family = bernoulli(link = "logit"), 
+                       chains = 4, iter= 2000, 
+                       file = "output/m.bern.head/body.tail")
+
+summary(m.bern.head/body.tail)
+
+```
+
+
+```{r}
+#Comparative model for head length and body length ratio on species with tail length
+
+m.bern.head/body.tail <- brm(data = final_krat_data, 
+                       formula = Species ~ (Head_Length/Body_Length) + Tail_Length,
+                       family = bernoulli(link = "logit"), 
+                       chains = 4, iter= 2000, 
+                       file = "output/m.bern.head/body.tail")
+
+summary(m.bern.head/body.tail)
+
 ```
 

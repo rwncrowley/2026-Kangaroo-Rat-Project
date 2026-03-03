@@ -16,7 +16,9 @@ library(tidyverse)
 library(brms)  
 library(ggeffects) 
 library(readxl)
+library(here)
 ```
+
 
 ### read in data
 
@@ -110,7 +112,8 @@ final_krat_data <- final_krat_data %>%
 
 # install.packages("readr")
 library(readr)
-write_csv(final_krat_data, "final_krat_data_2026.csv")
+#this code puts the csv of the new data frame in the output folder
+write_csv(final_krat_data, here("output/final_krat_data_2026.csv"))
 ```
 
 ### 
