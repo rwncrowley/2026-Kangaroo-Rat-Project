@@ -18,7 +18,7 @@ library(here)
 ## Make sure to read in the code for the Data Frame final_krat_data
 
 ```{r}
-final_krat_data <- read.csv("final_krat_data_2026.csv")
+final_krat_data <- read.csv(here("output/final_krat_data_2026.csv"))
 ```
 
 I don't think there is enough separation between species to be useful in this one
