@@ -1,5 +1,9 @@
 ---
-title: "README.Raw.Data"
+title: "README: Raw Data"
 output: html_document
 ---
 
+The two data frames in this folder are the raw data. They were transformed to be
+used for the data analyses in this project. The data sets were input into
+excel directly from GIS and then the excel files were read into R for data
+wrangling. 
