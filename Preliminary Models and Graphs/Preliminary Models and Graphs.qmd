@@ -19,6 +19,7 @@ library(here)
 
 ```{r}
 final_krat_data <- read.csv(here("output/final_krat_data_2026.csv"))
+
 ```
 
 I don't think there is enough separation between species to be useful in this one
