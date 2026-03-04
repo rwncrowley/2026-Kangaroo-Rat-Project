@@ -1,0 +1,8 @@
+---
+title: "README: Output"
+output: html_document
+---
+
+This output folder was created to store the cleaned data frame as well as all 
+of the models run on the data. All the models run use the same cleaned data 
+frame. 
