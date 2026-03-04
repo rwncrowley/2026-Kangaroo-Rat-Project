@@ -19,7 +19,8 @@ The Quarto documents in this folder show analysis done on the final_krat_data.
 (The cleaned data frame). Graphs were started by showing the relationship 
 between two variables and separating by species. Some simple models were run on 
 these graphs to quantify the relationships. An example of the code for a 
-preliminary graph is shown below.
+preliminary graph is shown below. Both Quarto documents are part of the 
+exploratory analysis.
 
 
 
