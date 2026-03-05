@@ -1,0 +1,12 @@
+---
+title: "README: Final Models and Graphs"
+format: html
+---
+
+This folder includes the explanatory document with all the models run. 
+
+The Quarto document called "Final Measurement Analysis3.3" shows all the models 
+run and interpretations of each. The Final Visualizations Quarto document shows 
+two examples of the models run. One example is a "good" measurement that had high 
+predictive power between the species, and one is a "bad" measurement that does 
+not show strong predictive power between species. 
