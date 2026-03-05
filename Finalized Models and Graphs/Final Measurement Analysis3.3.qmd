@@ -11,7 +11,10 @@ library(ggeffects)
 library(tidyverse)
 library(readxl)
 library(here)
-krat <- read.csv("final_krat_data_2026.csv")
+library(dplyr)
+#install.packages("ggtext")
+library(ggtext)
+krat <- read.csv(here("final_krat_data_2026.csv"))
 #print(krat)
 ```
 
@@ -387,14 +390,27 @@ Could be a good indicator bc it does not include 0 in CI and the prediction grap
 df %>%
   ggplot(aes(y= Wrist_Width, x = relative_size, color =  Species))+
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+ theme_bw()+
+  labs(
+    x="Relative size (Head length / Body length)",
+    y="Wrist Width",
+    title="Wrist Wisth over Relative Size of <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+  )+ theme(
+    legend.text=element_text(face="italic"),
+    legend.position=c(0.85,0.8),
+     plot.title=element_markdown(hjust=0.5))+ 
+  scale_color_manual(values=c("darkturquoise","palevioletred"))
+
+
+#setwd("C:/Users/macke/Desktop/BIOE 176 - Data Science/RC-2026-Kangaroo-Rat-Project")
+
 
 #Running bernouilli model to predict species based on measurements
 m.bern.wrist <- brm(Species ~ 1 + Wrist_Width + relative_size, 
                         data = df, 
                         family = bernoulli(), 
                         chains = 4, iter = 2000,
-                        file = "output/m.bern.wrist") 
+                        file = "C:/Users/macke/Desktop/BIOE 176 - Data Science/RC-2026-Kangaroo-Rat-Project/output/m.bern.wrist") 
 
 #summary model
 summary(m.bern.wrist)
@@ -403,6 +419,50 @@ plot(m.bern.wrist)
 #Predict the response based on the model and plot it
 preds.m.wrist <- predict_response(m.bern.wrist)
 plot(preds.m.wrist, show_data = TRUE)
+
+#preds <- ggpredict(m.bern.wrist, terms = c("relative_size", "Wrist_Width"))
+
+#ggplot(preds, aes(x, predicted, color = Species)) +
+  #geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.25) +
+  #geom_line(size = 1.2) +
+  #geom_point(data = df, aes(x = relative_size, y = as.numeric(Species)), 
+             #alpha = 0.7, linewidth = 2.5, position = position_jitter(width = 0.02)) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #labs(x = "Relative size", y = "Probability", color = "Species") +
+  #theme_minimal(base_size = 14)
+
+#plot(conditional_effects(m.bern.wrist), 
+     #rug = TRUE,
+     #points = list(alpha = 0.6, size = 2.5)) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #theme_minimal(base_size = 14) +
+  #theme(legend.position = c(0.85, 0.8))
+
+#plot(preds.m.wrist, show_data = TRUE) +
+  #theme_minimal(base_size = 14) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #theme(
+    #legend.position = c(0.85, 0.8),
+    #legend.background = element_rect(fill = "white", color = NA),
+    #panel.grid.minor = element_blank()
+  #) +
+  #labs(
+    #x = "Relative size (Head length / Body length)",
+    #y = "Probability of Species",
+    #title = "Wrist Width vs Relative Size Predictions"
+  #)+geom_jitter()
+
+#plot(conditional_effects(m.bern.wrist), 
+     #rug = TRUE,
+     #points = list(alpha = 0.7, size = 2.5)) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #theme_minimal(base_size = 14) +
+  #theme(legend.position = c(0.85, 0.8))
+
+#plot(preds.m.wrist, show_data = TRUE) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #theme_minimal(base_size = 14) +
+  #theme(legend.position = c(0.85, 0.8))
 
 #Check the probability of each species
 pp_check(m.bern.wrist, type="scatter_avg")
@@ -429,11 +489,32 @@ m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size,
                         data = df, 
                         family = bernoulli(), 
                         chains = 4, iter = 2000,
-                        file = "output/m.bern.finger") 
+                        file = "C:/Users/macke/Desktop/BIOE 176 - Data Science/RC-2026-Kangaroo-Rat-Project/output/m.bern.finger") 
 
 #summary model
 summary(m.bern.finger)
 plot(m.bern.finger)
+
+#plot(conditional_effects(m.bern.finger), 
+    # rug = TRUE,
+     #points = list(alpha = 0.6, size = 2.5)) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #theme_minimal(base_size = 14) +
+  #theme(legend.position = c(0.85, 0.8))
+
+#plot(preds.m.finger, show_data = TRUE) +
+  #theme_minimal(base_size = 14) +
+  #scale_color_manual(values = c("darkturquoise", "palevioletred")) +
+  #theme(
+    #legend.position = c(0.85, 0.8),
+    #legend.background = element_rect(fill = "white", color = NA),
+    #panel.grid.minor = element_blank()
+  #) +
+  #labs(
+    #x = "Relative size (Head length / Body length)",
+    #y = "Probability of Species",
+    #title = "Wrist Width vs Relative Size Predictions"
+  #)+geom_jitter()
 
 #Predict the response based on the model and plot it
 preds.m.finger <- predict_response(m.bern.finger)
