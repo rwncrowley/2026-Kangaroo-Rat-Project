@@ -19,6 +19,7 @@ library(brms)
 library(ggeffects)
 library(tidyverse)
 library(readxl)
+library(dplyr)
 #install.packages("ggtext")
 library(ggtext)
 library(here)
@@ -31,7 +32,7 @@ df <- krat %>%
     mutate(relative_size = Body_Length / Head_Length)
 ```
 
-### Model:
+### Testing the Finger length model's predictions:
 
 ```{r}
 
@@ -101,10 +102,9 @@ df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Spe
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Relative size of head (Head length / Body length)",
-    y="Finger length",
-    title="Finger Length over Relative Head Size of 
-    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+    x="Relative size (Head length (mm) / Body length (mm))",
+    y="Finger length (mm)",
+    title="Testing the correctness of species predictions based on finger length"
   )
 
 #Violin plot option
@@ -115,23 +115,208 @@ df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Spe
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Relative size of head (Head length / Body length)",
-    y="Finger length",
-    title="Finger Length over Relative Head Size of 
-    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+     x="Relative size (Head length (mm) / Body length (mm))",
+    y="Finger length (mm)",
+    title="Testing the correctness of species predictions based on finger length"
   )
 
 #boxplot!!!!
-df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_boxplot()+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+
+pred.finger.boxplot <- df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_boxplot()+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+
   theme(
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Relative size of head (Head length / Body length)",
-    y="Finger length",
-    title="Finger Length over Relative Head Size of 
-    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+    x="Relative size (Head length (mm) / Body length (mm))",
+    y="Finger length (mm)",
+    title="Testing Accuracy of finger length based species predictions"
   )
+
+ggsave("pred.finger.boxplot.png")
+```
+
+### Creating graphs to show how good finger measurement is at prediction
+
+```{r}
+#Goal: histogram of correct species vs species that would have been wrong if only based on model
+#use casewhen to create species assumptions in model, =<50% prob is Dihe, >50% prob is Dive
+df.pred.finger.m.sp <- df_filtered |> mutate(m.species = case_when(
+  Probability.sp > 0.5 ~ "Dipodomys venustus",
+  Probability.sp < 0.5 ~ "Dipodomys heermanni",
+  Probability.sp == 0.5 ~ "unknown"
+))
+head(df.pred.finger.m.sp)
+
+
+#plot the real species assignments
+bar.real.sp.finger <- df.pred.finger.m.sp |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Actual species",
+    y="Count",
+    title="Actual Species counts")+ labs(fill = "Species")
+
+ggsave("bar.real.sp.finger.png")
+
+#Plot the model species assignments
+bar.pred.sp.finger <- df.pred.finger.m.sp |> ggplot(mapping = aes(x=m.species, fill = m.species))+geom_bar()+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Species Prediction",
+    y="Count",
+    title="Species predictions based on finger length")+ labs(fill = "Predicted Species") 
+
+ggsave("bar.pred.sp.finger.png")
+```
+
+## Testing hand width predictive capability
+
+```{r}
+#Plot the Hand width vs Relative size
+df %>%
+  ggplot(aes(y= Hand_Width, x = relative_size, color =  Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+
+#Running bernouilli model to predict species based on measurements
+m.bern.handW <- brm(Species ~ 1 + Hand_Width + relative_size, 
+                        data = df, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.bern.handW") 
+
+#summary model
+summary(m.bern.handW)
+plot(m.bern.handW)
+
+#Predict the response based on the model and plot it
+preds.m.handW <- predict_response(m.bern.handW)
+plot(preds.m.handW, show_data = TRUE)
+
+#Check the probability of each species
+pp_check(m.bern.handW, type="scatter_avg")
+
+#Use function to check if these were right
+fitted(m.bern.handW)
+```
+
+```{r}
+#GOAL: Create new column using probability estimates from preds.m.finger
+
+#Create vector using values from model
+Pred.sp.hand <- fitted(m.bern.handW)
+head(Pred.sp.hand)
+#Filter df for only observations including finger length AKA get rid of NAs
+#df2 <- df |> filter(Finger_Length )
+df.filt.hand <- df[!is.na(df$Hand_Width) & !is.na(df$relative_size), ]
+nrow(df.filt.hand)
+# Create as column
+df.filt.hand$Probability.sp <- NA
+head(df.filt.hand)
+
+#Create new data frame using the vector
+Pred.sp.hand.data <- data.frame(Pred.sp.hand)
+head(Pred.sp.hand.data$Estimate)
+Pred.sp.hand.est <- Pred.sp.hand.data$Estimate
+
+#showing rows of each
+nrow(df.filt.hand)
+length(Pred.sp.hand.data$Estimate)
+#Add data estimate to new column
+df.filt.hand$Probability.sp <- Pred.sp.hand.data$Estimate 
+head(df.filt.hand)
+```
+
+### Plots for Hand width species prediction
+
+```{r}
+#Here are the species predicted by the model versus the actual species shown in a plot for our presentation.
+pred.handW.boxplot <- df.filt.hand |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_boxplot()+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+ylim(0,1)+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Hand width size (mm)",
+    y="Probability of species",
+    title="Testing accuracy of hand width based species predictions"
+  )
+
+ggsave("pred.handW.boxplot.png")
+
+#trying a violin plot
+df.filt.hand |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_violin()+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+ylim(0,1)+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Hand width size (mm)",
+    y="Probability of species",
+    title="Testing accuracy of hand width based species predictions"
+  )
+#trying strip plot
+df.filt.hand |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_jitter(width = 0.2, height = 0)+theme_bw()+ylim(0,1)+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Hand width size (mm)",
+    y="Probability of species",
+    title="Testing accuracy of hand width based species predictions")
+```
+
+### Creating a graph which might better show how bad this measurement is
+
+```{r}
+#Goal: histogram of correct species vs species that would have been wrong if only based on model
+#use casewhen to create species assumptions in model, <50% prob is Dihe, >50% prob is Dive
+df.handW.m.pred <- df.filt.hand |> mutate(m.species = case_when(
+  Probability.sp > 0.5 ~ "Dipodomys venustus",
+  Probability.sp < 0.5 ~ "Dipodomys heermanni",
+  Probability.sp == 0.5 ~ "unknown"
+))
+head(df.handW.m.pred)
+
+
+#plot the real species assignments
+bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Actual species",
+    y="Count",
+    title="Actual Species counts")+ labs(fill = "Species")
+
+ggsave("bar.real.sp.handW.png")
+
+#Plot the model species assignments
+bar.pred.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=m.species, fill = m.species))+geom_bar()+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Species Prediction",
+    y="Count",
+    title="Species predictions based on hand width")+ labs(fill = "Predicted Species") 
+
+ggsave("bar.pred.sp.handW.png")
 ```
