@@ -79,32 +79,6 @@ pp_check(m.bern.finger, type="scatter_avg")
 fitted(m.bern.finger)
 ```
 
-\
-xxx
-
-```{r}
-#Trying the bernouilli model without the proxy for size to see if its better
-#run bernouilli model with only the finger length
-m.bern.finger2 <- brm(Species ~ 1 + Finger_Length, 
-                        data = df, 
-                        family = bernoulli(), 
-                        chains = 4, iter = 2000,
-                        file = "output/m.bern.finger2") 
-#summary model
-summary(m.bern.finger2)
-plot(m.bern.finger2)
-
-#Predict the response based on the model and plot it
-preds.m.finger2 <- predict_response(m.bern.finger2)
-plot(preds.m.finger2, show_data = TRUE)
-
-#Check the probability of each species
-pp_check(m.bern.finger2, type="scatter_avg")
-
-#Use function to check if these were right
-fitted(m.bern.finger2)
-```
-
 ### Interpretation:
 
 Finger length does not include 0 in CI and estimate is 3.64 which means its good??? has very distinct 100% certainty of species for certain values with only 2 that have a probability of being either.
