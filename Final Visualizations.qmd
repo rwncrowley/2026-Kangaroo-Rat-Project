@@ -38,11 +38,25 @@ krat <- read.csv("final_krat_data_2026.csv")
 ## Good measurement: Finger length
 
 ```{r}
+install.packages("ggtext")
+library(ggtext)
 #Plot the Finger length vs Relative size
 df %>%
   ggplot(aes(y= Finger_Length, x = relative_size, color =  Species))+
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+ theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    legend.position=c(0.85,0.2),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size of head (Head length / Body length)",
+    y="Finger length",
+    title="Finger Length over Relative Head Size of 
+    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+  )
 
 #Running bernouilli model to predict species based on measurements
 m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size, 
@@ -50,7 +64,6 @@ m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size,
                         family = bernoulli(), 
                         chains = 4, iter = 2000,
                         file = "output/m.bern.finger") 
-
 #summary model
 summary(m.bern.finger)
 plot(m.bern.finger)
@@ -66,13 +79,39 @@ pp_check(m.bern.finger, type="scatter_avg")
 fitted(m.bern.finger)
 ```
 
+\
+xxx
+
+```{r}
+#Trying the bernouilli model without the proxy for size to see if its better
+#run bernouilli model with only the finger length
+m.bern.finger2 <- brm(Species ~ 1 + Finger_Length, 
+                        data = df, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.bern.finger2") 
+#summary model
+summary(m.bern.finger2)
+plot(m.bern.finger2)
+
+#Predict the response based on the model and plot it
+preds.m.finger2 <- predict_response(m.bern.finger2)
+plot(preds.m.finger2, show_data = TRUE)
+
+#Check the probability of each species
+pp_check(m.bern.finger2, type="scatter_avg")
+
+#Use function to check if these were right
+fitted(m.bern.finger2)
+```
+
 ### Interpretation:
 
 Finger length does not include 0 in CI and estimate is 3.64 which means its good??? has very distinct 100% certainty of species for certain values with only 2 that have a probability of being either.
 
 ### How to make the visualizations better:
 
-1\) stagger the values because they are stacked on like 5 values
+1\) stagger/jitter the values because they are stacked on like 5 values
 
 2\) New colors + theme, etc
 
