@@ -1,0 +1,159 @@
+---
+title: "Presentation visualizations"
+format: html
+editor: visual
+---
+
+## Measurements to present:
+
+1\) Finger length
+
+2\) Hand Width
+
+## Goals:
+
+1\) Use generated models to analyze the data
+
+2\) Create graphs
+
+3\) Format the graphs for presentations
+
+4\) Make sure our interpretation is sound and concise
+
+## Set Up:
+
+```{r}
+#load the packages necessary
+library(ggplot2)
+library(brms)
+library(ggeffects)
+library(tidyverse)
+library(readxl)
+library(here)
+#Load the data
+krat <- read.csv("final_krat_data_2026.csv")
+#print(krat)
+```
+
+## Good measurement: Finger length
+
+```{r}
+install.packages("ggtext")
+library(ggtext)
+#Plot the Finger length vs Relative size
+df %>%
+  ggplot(aes(y= Finger_Length, x = relative_size, color =  Species))+
+  geom_point()+
+  geom_smooth(method = "lm")+ theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    legend.position=c(0.85,0.2),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size of head (Head length / Body length)",
+    y="Finger length",
+    title="Finger Length over Relative Head Size of 
+    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+  )
+
+#Running bernouilli model to predict species based on measurements
+m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size, 
+                        data = df, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.bern.finger") 
+#summary model
+summary(m.bern.finger)
+plot(m.bern.finger)
+
+#Predict the response based on the model and plot it
+preds.m.finger <- predict_response(m.bern.finger)
+plot(preds.m.finger, show_data = TRUE)
+
+#Check the probability of each species
+pp_check(m.bern.finger, type="scatter_avg")
+
+#Use function to check if these were right
+fitted(m.bern.finger)
+```
+
+\
+xxx
+
+```{r}
+#Trying the bernouilli model without the proxy for size to see if its better
+#run bernouilli model with only the finger length
+m.bern.finger2 <- brm(Species ~ 1 + Finger_Length, 
+                        data = df, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.bern.finger2") 
+#summary model
+summary(m.bern.finger2)
+plot(m.bern.finger2)
+
+#Predict the response based on the model and plot it
+preds.m.finger2 <- predict_response(m.bern.finger2)
+plot(preds.m.finger2, show_data = TRUE)
+
+#Check the probability of each species
+pp_check(m.bern.finger2, type="scatter_avg")
+
+#Use function to check if these were right
+fitted(m.bern.finger2)
+```
+
+### Interpretation:
+
+Finger length does not include 0 in CI and estimate is 3.64 which means its good??? has very distinct 100% certainty of species for certain values with only 2 that have a probability of being either.
+
+### How to make the visualizations better:
+
+1\) stagger/jitter the values because they are stacked on like 5 values
+
+2\) New colors + theme, etc
+
+3\) Mutate to create table with probability of either species compared to actual species– make a histogram of what is correct??? to test how good our model is??
+
+## Bad Measurement: Hand Width
+
+```{r}
+#Plot the Hand width vs Relative size
+df %>%
+  ggplot(aes(y= Hand_Width, x = relative_size, color =  Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+
+#Running bernouilli model to predict species based on measurements
+m.bern.handW <- brm(Species ~ 1 + Hand_Width + relative_size, 
+                        data = df, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.bern.handW") 
+
+#summary model
+summary(m.bern.handW)
+plot(m.bern.handW)
+
+#Predict the response based on the model and plot it
+preds.m.handW <- predict_response(m.bern.handW)
+plot(preds.m.handW, show_data = TRUE)
+
+#Check the probability of each species
+pp_check(m.bern.handW, type="scatter_avg")
+
+#Use function to check if these were right
+fitted(m.bern.handW)
+```
+
+### Interpretation:
+
+Confidence interval for hand width hovers around 0 and includes it meaning that there is no difference and this measurement has zero difference between each species.
+
+### How to make the visualizations better:
+
+1\) stagger the values because they are stacked on like 3 values
+
+2\) New colors + theme, etc
