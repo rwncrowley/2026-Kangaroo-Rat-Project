@@ -1,0 +1,137 @@
+---
+title: "Testing predictive power"
+format: pdf
+editor: visual
+---
+
+## Goals
+
+Compare real species with the species predicted by our measurements in the model.
+
+Create a graph to show our real species values vs ones predicted by measurements
+
+## Set up
+
+```{r}
+#load the packages necessary
+library(ggplot2)
+library(brms)
+library(ggeffects)
+library(tidyverse)
+library(readxl)
+#install.packages("ggtext")
+library(ggtext)
+library(here)
+#Load the data
+krat <- read.csv("final_krat_data_2026.csv")
+#print(krat)
+
+#Creating a new column to use as a proxy for the size of the individual by dividing head_length by body_length
+df <- krat %>%
+    mutate(relative_size = Body_Length / Head_Length)
+```
+
+### Model:
+
+```{r}
+
+#Plot the Finger length vs Relative size
+df %>%
+  ggplot(aes(y= Finger_Length, x = relative_size, color =  Species))+
+  geom_point()+
+  geom_smooth(method = "lm")
+
+#Running bernouilli model to predict species based on measurements
+m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size, 
+                        data = df, 
+                        family = bernoulli(), 
+                        chains = 4, iter = 2000,
+                        file = "output/m.bern.finger") 
+
+#summary model
+summary(m.bern.finger)
+plot(m.bern.finger)
+
+#Predict the response based on the model and plot it
+preds.m.finger <- predict_response(m.bern.finger)
+plot(preds.m.finger, show_data = TRUE)
+
+#Check the probability of each species
+pp_check(m.bern.finger, type="scatter_avg")
+
+#Use function to check if these were right
+fitted(m.bern.finger)
+
+```
+
+How do I take the values from the preds.m.finger and create a new column in df?
+
+```{r}
+#GOAL: Create new column using probability estimates from preds.m.finger
+
+#Create vector using values from model
+Pred.sp <- fitted(m.bern.finger)
+head(Pred.sp)
+#Filter df for only observations including finger length AKA get rid of NAs
+#df2 <- df |> filter(Finger_Length )
+df_filtered <- df[!is.na(df$Finger_Length) & !is.na(df$relative_size), ]
+nrow(df_filtered)
+# Create as column
+df_filtered$Probability.sp <- NA
+head(df_filtered)
+
+#Create new data frame using the vector
+Pred.sp.data <- data.frame(Pred.sp)
+head(Pred.sp.data$Estimate)
+Pred.sp.est <- Pred.sp.data$Estimate
+
+#showing rows of each
+nrow(df_filtered)
+length(Pred.sp.data$Estimate)
+#Add data estimate to new column
+df_filtered$Probability.sp <- Pred.sp.data$Estimate 
+head(df_filtered)
+#Should we add the error too???
+
+#Here are the species predicted by the model versus the actual species shown in a plot for our presentation.
+df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size of head (Head length / Body length)",
+    y="Finger length",
+    title="Finger Length over Relative Head Size of 
+    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+  )
+
+#Violin plot option
+df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_violin()+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size of head (Head length / Body length)",
+    y="Finger length",
+    title="Finger Length over Relative Head Size of 
+    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+  )
+
+#boxplot!!!!
+df_filtered |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Species))+geom_boxplot()+geom_point()+geom_jitter(width = 0.2, height = 0)+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size of head (Head length / Body length)",
+    y="Finger length",
+    title="Finger Length over Relative Head Size of 
+    <br>*Dipodomys heermanni* and *Dipodomys venustus*"
+  )
+```
