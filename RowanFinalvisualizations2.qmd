@@ -63,10 +63,10 @@ df.finger <- data.frame(preds.m.finger$Finger_Length)
 head(df.finger)
 
 #Create the plot from before but including error and prettier
-df.finger |> ggplot(mapping=aes(y=predicted, x=x)+
+pred.vs.finger <- df.finger |> ggplot(mapping=aes(y=predicted, x=x))+
 #Add error bars using the confidence interval as the error bars
 geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.5, linewidth = 0.75)+
-  geom_point(size = 2)+
+  geom_point(size = 2)+ scale_x_continuous(breaks = unique(df.finger$x))+
 #Make it pretty
 theme_bw()+
   theme(
@@ -79,6 +79,7 @@ theme_bw()+
     title="Species probability based on finger length values"
   )+
     labs(color = "Error")
+print(pred.vs.finger)
 
 ggsave("pred.vs.finger.png")
 
@@ -223,6 +224,35 @@ m.bern.handW <- brm(Species ~ 1 + Hand_Width + relative_size,
 summary(m.bern.handW)
 plot(m.bern.handW)
 
+preds.m.handW <- predict_response(m.bern.handW)
+#plot this
+plot(preds.m.handW, show_data = TRUE)
+head(preds.m.handW$Hand_Width)
+#Make model finger into its own data frame to plot
+df.handW2 <- data.frame(preds.m.handW$Hand_Width)
+head(df.handW2)
+
+#Create the plot from before but including error and prettier
+pred.vs.handW <- df.handW2 |> ggplot(mapping=aes(y=predicted, x=x))+ylim(0,1)+
+#Add error bars using the confidence interval as the error bars
+geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.5, linewidth = 0.75)+
+  geom_point(size = 2)+ scale_x_continuous(breaks = unique(df.finger$x))+
+#Make it pretty
+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5))+
+  scale_color_gradient(low= "black", high = "maroon")+
+  labs(
+    x="Hand Width (mm)",
+    y="Probability of Species",
+    title="Species probability based on hand width values"
+  )+
+    labs(color = "Error")
+print(pred.vs.handW)
+
+ggsave("pred.vs.handW.png")
+
 #Predict the response based on the model and plot it
 preds.m.handW <- predict_response(m.bern.handW)
 plot(preds.m.handW, show_data = TRUE)
@@ -276,6 +306,7 @@ pred.handW.boxplot <- df.filt.hand |> ggplot(mapping = aes(y = Probability.sp, x
     y="Probability of species",
     title="Testing accuracy of hand width based species predictions"
   )
+print(pred.handW.boxplot)
 
 ggsave("pred.handW.boxplot.png")
 
