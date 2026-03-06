@@ -63,15 +63,17 @@ df.finger <- data.frame(preds.m.finger$Finger_Length)
 head(df.finger)
 
 #Create the plot from before but including error and prettier
-pred.vs.finger <- df.finger |> ggplot(mapping=aes(y=predicted, x= x))+geom_point()+
+df.finger |> ggplot(mapping=aes(y=predicted, x=x)+
 #Add error bars using the confidence interval as the error bars
-geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.1)+
+geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.5, linewidth = 0.75)+
+  geom_point(size = 2)+
 #Make it pretty
 theme_bw()+
   theme(
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5))+
-  scale_color_gradient(low= "black", high = "violetred")+labs(
+  scale_color_gradient(low= "black", high = "maroon")+
+  labs(
     x="Finger length (mm)",
     y="Probability of Species",
     title="Species probability based on finger length values"
