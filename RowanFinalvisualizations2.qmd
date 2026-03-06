@@ -55,7 +55,30 @@ plot(m.bern.finger)
 
 #Predict the response based on the model and plot it
 preds.m.finger <- predict_response(m.bern.finger)
+#plot this
 plot(preds.m.finger, show_data = TRUE)
+head(preds.m.finger$Finger_Length)
+#Make model finger into its own data frame to plot
+df.finger <- data.frame(preds.m.finger$Finger_Length)
+head(df.finger)
+
+#Create the plot from before but including error and prettier
+pred.vs.finger <- df.finger |> ggplot(mapping=aes(y=predicted, x= x))+geom_point()+
+#Add error bars using the confidence interval as the error bars
+geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.1)+
+#Make it pretty
+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5))+
+  scale_color_gradient(low= "black", high = "violetred")+labs(
+    x="Finger length (mm)",
+    y="Probability of Species",
+    title="Species probability based on finger length values"
+  )+
+    labs(color = "Error")
+
+ggsave("pred.vs.finger.png")
 
 #Check the probability of each species
 pp_check(m.bern.finger, type="scatter_avg")
