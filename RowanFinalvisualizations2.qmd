@@ -212,6 +212,8 @@ bar.pred.sp.finger <- df.pred.finger.m.sp |> ggplot(mapping = aes(x=m.species, f
     x="Species Prediction",
     y="Count",
     title="Species predictions based on finger length")+ labs(fill = "Predicted Species") 
+print(bar.pred.sp.finger
+    )
 
 ggsave("bar.pred.sp.finger.png")
 ```
@@ -374,6 +376,9 @@ df.handW.m.pred <- df.filt.hand |> mutate(m.species = case_when(
 ))
 head(df.handW.m.pred)
 
+#Making sure that the histograms will follow the color to species assignments in past graphs for more continuity in our presentation
+m.species.colors <- c("Dipodomys heermanni" = "darkturquoise", 
+                    "Dipodomys venustus" = "palevioletred")
 
 #plot the real species assignments
 bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+
@@ -381,11 +386,12 @@ bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = S
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
         )+
-  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  scale_color_manual(values= m.species.colors)+
   labs(
     x="Actual species",
     y="Count",
     title="Actual Species counts")+ labs(fill = "Species")
+print(bar.real.sp.handW)
 
 ggsave("bar.real.sp.handW.png")
 
@@ -395,11 +401,13 @@ bar.pred.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=m.species, fill =
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
         )+
-  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  scale_color_manual(values=c("palevioletred","darkturquoise"))+
   labs(
     x="Species Prediction",
     y="Count",
     title="Species predictions based on hand width")+ labs(fill = "Predicted Species") 
+
+print(bar.pred.sp.handW)
 
 ggsave("bar.pred.sp.handW.png")
 ```
