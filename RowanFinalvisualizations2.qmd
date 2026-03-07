@@ -269,7 +269,7 @@ pred.vs.handW <- df.handW2 |> ggplot(mapping=aes(y=predicted, x=x))+ylim(0,1)+
 geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.5, linewidth = 0.75)+
   geom_point(size = 2)+ 
   #make the x axis show every value
-  scale_x_continuous(breaks = unique(df.finger$x))+
+  scale_x_continuous(breaks = unique(df.handW2$x))+
 #Make it pretty
 theme_bw()+
   theme(
@@ -376,27 +376,24 @@ df.handW.m.pred <- df.filt.hand |> mutate(m.species = case_when(
 ))
 head(df.handW.m.pred)
 
-#Making sure that the histograms will follow the color to species assignments in past graphs for more continuity in our presentation
-m.species.colors <- c("Dipodomys heermanni" = "darkturquoise", 
-                    "Dipodomys venustus" = "palevioletred")
 
 #plot the real species assignments
-bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+
+bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+ylim(0,35)+
   theme(
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
         )+
-  scale_color_manual(values= m.species.colors)+
+  scale_color_manual(values = c("darkturquoise","palevioletred"))+
   labs(
     x="Actual species",
     y="Count",
-    title="Actual Species counts")+ labs(fill = "Species")
+    title="Actual Species counts")+ labs(fill = 'Species')
 print(bar.real.sp.handW)
 
 ggsave("bar.real.sp.handW.png")
 
 #Plot the model species assignments
-bar.pred.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=m.species, fill = m.species))+geom_bar()+theme_bw()+
+bar.pred.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=m.species, fill = m.species))+geom_bar()+theme_bw()+ylim(0, 35)+
   theme(
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
