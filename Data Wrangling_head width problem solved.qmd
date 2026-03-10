@@ -1,0 +1,116 @@
+---
+title: "20260224 Data Wrangling Yeonu"
+author: "Yeonu"
+format: html
+editor: visual
+---
+
+## 
+
+## Sorting Data
+
+### load packages
+
+```{r}
+library(tidyverse) 
+library(brms)  
+library(ggeffects) 
+library(readxl)
+```
+
+### read in data
+
+```{r}
+df1 <- read_excel("1_29Kangaroo Rat Data_TableToExcel.xlsx")  
+df2 <- read_excel("1_29Small_Mammal_Observations_TableToExcel.xlsx") 
+```
+
+### cleaning
+
+```{r}
+### STEP 1. Filter for Di
+df2_Difiltered <- df2 %>%
+  #filter for DI, Di, dI, di
+  filter(tolower(genus) == "di")
+
+### STEP 2. Extract head widths. Distinguish pm and b
+df2_head_mb_cleaned <- df2_Difiltered %>%
+  mutate(
+    # Extract all numeric values and labels (pm, b) in their appearing order
+    all_nums = str_extract_all(KRAT_Head_Width_mm, "[0-9.]+"),
+    all_labels = str_extract_all(str_to_lower(KRAT_Head_Width_mm), "pm|b"),
+    
+    # Map the first and second extracted elements to temporary variables
+    num1 = sapply(all_nums, function(x) as.numeric(x[1])),
+    num2 = sapply(all_nums, function(x) as.numeric(x[2])),
+    lab1 = sapply(all_labels, function(x) x[1]),
+    lab2 = sapply(all_labels, function(x) x[2])
+  ) %>%
+  mutate(
+    # Rule: Assign num1/num2 to Maxillary or Bolea based on the order of lab1/lab2
+    # If no label exists, num1 defaults to Maxillary_Head_Width
+    Maxillary_Head_Width = case_when(
+      is.na(lab1) ~ num1,
+      lab1 == "pm" ~ num1,
+      lab2 == "pm" ~ num2,
+      TRUE ~ NA_real_
+    ),
+    Bolea_Head_Width = case_when(
+      lab1 == "b" ~ num1,
+      lab2 == "b" ~ num2,
+      TRUE ~ NA_real_
+    )
+  )
+
+### STEP 3: rename df2 to merge with df1 later
+df2_renametodf1 <- df2_head_mb_cleaned %>%
+  rename(
+    Notes = KRAT_Notes,
+    Toe_Length = KRAT_Hind_Toe_Length,
+    Hind_Limb_Length = KRAT_Hind_Limb_Length,
+    Foot_Width = KRAT_Foot_Width_mm,
+    Foot_Length = KRAT_Foot_Length_mm,
+    Hand_Width = KRAT_Hand_Width_mm,
+    Finger_Length = KRAT_Finger_Length,
+    Wrist_Width = KRAT_Wrist_Width_mm,
+    Head_Length = KRAT_Head_Length_mm,
+    Tag = Tag_Number,
+    Weight_Animal_Only = Animal_Weight_g,
+    LOC = location_code,
+    Ear_Length_Notch = Ear_mm,
+    Tail_Length = Tail_mm,
+    Body_Length = Body_mm,
+    Genus = genus
+  ) %>%
+  # Remove irrelevant or temporary columns (teeth: No records, Head width-: changed to other columns)
+  select(-KRAT_Teeth, -KRAT_Head_Width_mm, -all_nums, -all_labels, -num1, -num2, -lab1, -lab2)
+
+### STEP 4: Merge df1 and df2
+# Data type change to numeric
+df1_numeric <- df1 %>%
+  select(-Teeth) %>%
+  mutate(across(c(Bolea_Head_Width, Maxillary_Head_Width, Toe_Length, Hind_Limb_Length), as.numeric))
+
+df2_numeric <- df2_renametodf1 %>%
+  mutate(across(c(Bolea_Head_Width, Maxillary_Head_Width, Toe_Length, Hind_Limb_Length), as.numeric))
+
+# Bind them together
+final_krat_data <- bind_rows(df1_numeric, df2_numeric)
+
+### STEP 5: Species assignment & Type Conversion
+final_krat_data <- final_krat_data %>%
+  # 1. Assign Species name based on Location (LOC) column
+  mutate(Species = case_when(
+    LOC == "Hastings" ~ "Dipodomys venustus",
+    LOC == "FONR"     ~ "Dipodomys heermanni", 
+    TRUE ~ Species
+  )) %>%
+  # 2. Ensure all measurement columns are numeric to prevent plotting errors
+  mutate(across(c(contains("Length"), contains("Width"), contains("Weight")), as.numeric))
+
+# install.packages("readr")
+library(readr)
+write_csv(final_krat_data, "final_krat_data_2026.csv")
+```
+
+### 

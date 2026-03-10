@@ -37,10 +37,22 @@ df <- krat %>%
 ```{r}
 
 #Plot the Finger length vs Relative size
-df %>%
+finger.vs.size <- df %>%
   ggplot(aes(y= Finger_Length, x = relative_size, color =  Species))+
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+
+#Make it pretty
+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5))+
+ scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size (Body length (mm)/Head Length(mm))",
+    y="Finger Length (mm)",
+    title="Finger length vs. Relative size of Dipodomys sp.")
+print(finger.vs.size)
+ggsave("finger.vs.size.png")
 
 #Running bernouilli model to predict species based on measurements
 m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size, 
@@ -55,7 +67,33 @@ plot(m.bern.finger)
 
 #Predict the response based on the model and plot it
 preds.m.finger <- predict_response(m.bern.finger)
+#plot this
 plot(preds.m.finger, show_data = TRUE)
+head(preds.m.finger$Finger_Length)
+#Make model finger into its own data frame to plot
+df.finger <- data.frame(preds.m.finger$Finger_Length)
+head(df.finger)
+
+#Create the plot from before but including error and prettier
+pred.vs.finger <- df.finger |> ggplot(mapping=aes(y=predicted, x=x))+
+#Add error bars using the confidence interval as the error bars
+geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.5, linewidth = 0.75)+
+  geom_point(size = 2)+ scale_x_continuous(breaks = unique(df.finger$x))+
+#Make it pretty
+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5))+
+  scale_color_gradient(low= "black", high = "maroon")+
+  labs(
+    x="Finger length (mm)",
+    y="Probability of Species",
+    title="Species probability based on finger length values"
+  )+
+    labs(color = "Error")
+print(pred.vs.finger)
+
+ggsave("pred.vs.finger.png")
 
 #Check the probability of each species
 pp_check(m.bern.finger, type="scatter_avg")
@@ -128,11 +166,11 @@ pred.finger.boxplot <- df_filtered |> ggplot(mapping = aes(y = Probability.sp, x
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Relative size (Head length (mm) / Body length (mm))",
-    y="Finger length (mm)",
+    x="Species",
+    y="Predictive Power",
     title="Testing Accuracy of finger length based species predictions"
   )
-
+print(pred.finger.boxplot)
 ggsave("pred.finger.boxplot.png")
 ```
 
@@ -174,6 +212,8 @@ bar.pred.sp.finger <- df.pred.finger.m.sp |> ggplot(mapping = aes(x=m.species, f
     x="Species Prediction",
     y="Count",
     title="Species predictions based on finger length")+ labs(fill = "Predicted Species") 
+print(bar.pred.sp.finger
+    )
 
 ggsave("bar.pred.sp.finger.png")
 ```
@@ -182,10 +222,26 @@ ggsave("bar.pred.sp.finger.png")
 
 ```{r}
 #Plot the Hand width vs Relative size
-df %>%
+Hand.vs.size <- df %>%
   ggplot(aes(y= Hand_Width, x = relative_size, color =  Species))+
   geom_point()+
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm")+
+  theme_bw()+
+  ylim(5,10)+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.2)
+        )+
+  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  labs(
+    x="Relative size (Body length mm/Head length mm)",
+    y="Hand width (mm)",
+    title="Hand width vs. Relative size of Dipodomys Heermanni and D. Venustus")
+print(Hand.vs.size)
+ggsave("Hand.vs.size.png")
+
+
+
 
 #Running bernouilli model to predict species based on measurements
 m.bern.handW <- brm(Species ~ 1 + Hand_Width + relative_size, 
@@ -194,13 +250,43 @@ m.bern.handW <- brm(Species ~ 1 + Hand_Width + relative_size,
                         chains = 4, iter = 2000,
                         file = "output/m.bern.handW") 
 
-#summary model
+#summary model and plots, looks good!!!
 summary(m.bern.handW)
 plot(m.bern.handW)
 
-#Predict the response based on the model and plot it
+#Show predicted response of the model
 preds.m.handW <- predict_response(m.bern.handW)
+#plot this
 plot(preds.m.handW, show_data = TRUE)
+head(preds.m.handW$Hand_Width)
+#Make model handW probabilities into its own data frame so we can plot
+df.handW2 <- data.frame(preds.m.handW$Hand_Width)
+head(df.handW2)
+
+#Create the plot of prediction probabilties of species vs value including error and prettier
+pred.vs.handW <- df.handW2 |> ggplot(mapping=aes(y=predicted, x=x))+ylim(0,1)+
+#Add error bars using the confidence interval as the error bars
+geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = std.error), width = 0.5, linewidth = 0.75)+
+  geom_point(size = 2)+ 
+  #make the x axis show every value
+  scale_x_continuous(breaks = unique(df.handW2$x))+
+#Make it pretty
+theme_bw()+
+  theme(
+    legend.text=element_text(face="italic"),
+    plot.title=element_markdown(hjust=0.5))+
+  #change the color gradient colors
+  scale_color_gradient(low= "black", high = "maroon")+
+  labs(
+    x="Hand Width (mm)",
+    y="Probability of Species",
+    title="Species probability based on hand width values"
+  )+
+    labs(color = "Error")
+print(pred.vs.handW)
+
+ggsave("pred.vs.handW.png")
+
 
 #Check the probability of each species
 pp_check(m.bern.handW, type="scatter_avg")
@@ -212,14 +298,14 @@ fitted(m.bern.handW)
 ```{r}
 #GOAL: Create new column using probability estimates from preds.m.finger
 
-#Create vector using values from model
+#Create vector using values from fitted model
 Pred.sp.hand <- fitted(m.bern.handW)
 head(Pred.sp.hand)
-#Filter df for only observations including finger length AKA get rid of NAs
-#df2 <- df |> filter(Finger_Length )
+#Filter df for only observations including both finger length and relative size AKA get rid of NAs
 df.filt.hand <- df[!is.na(df$Hand_Width) & !is.na(df$relative_size), ]
+#check the number of rows matches 
 nrow(df.filt.hand)
-# Create as column
+# Create empty column so we can add probabilities
 df.filt.hand$Probability.sp <- NA
 head(df.filt.hand)
 
@@ -247,10 +333,10 @@ pred.handW.boxplot <- df.filt.hand |> ggplot(mapping = aes(y = Probability.sp, x
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Hand width size (mm)",
     y="Probability of species",
     title="Testing accuracy of hand width based species predictions"
   )
+print(pred.handW.boxplot)
 
 ggsave("pred.handW.boxplot.png")
 
@@ -262,7 +348,6 @@ df.filt.hand |> ggplot(mapping = aes(y = Probability.sp, x = Species, color = Sp
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Hand width size (mm)",
     y="Probability of species",
     title="Testing accuracy of hand width based species predictions"
   )
@@ -293,30 +378,33 @@ head(df.handW.m.pred)
 
 
 #plot the real species assignments
-bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+
+bar.real.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=Species, fill = Species))+geom_bar()+theme_bw()+ylim(0,35)+
   theme(
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
         )+
-  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  scale_color_manual(values = c("darkturquoise","palevioletred"))+
   labs(
     x="Actual species",
     y="Count",
-    title="Actual Species counts")+ labs(fill = "Species")
+    title="Actual Species counts")+ labs(fill = 'Species')
+print(bar.real.sp.handW)
 
 ggsave("bar.real.sp.handW.png")
 
 #Plot the model species assignments
-bar.pred.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=m.species, fill = m.species))+geom_bar()+theme_bw()+
+bar.pred.sp.handW <- df.handW.m.pred |> ggplot(mapping = aes(x=m.species, fill = m.species))+geom_bar()+theme_bw()+ylim(0, 35)+
   theme(
     legend.text=element_text(face="italic"),
     plot.title=element_markdown(hjust=0.5)
         )+
-  scale_color_manual(values=c("darkturquoise","palevioletred"))+
+  scale_color_manual(values=c("palevioletred","darkturquoise"))+
   labs(
     x="Species Prediction",
     y="Count",
     title="Species predictions based on hand width")+ labs(fill = "Predicted Species") 
+
+print(bar.pred.sp.handW)
 
 ggsave("bar.pred.sp.handW.png")
 ```
