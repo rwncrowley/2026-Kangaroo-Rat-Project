@@ -30,8 +30,9 @@ library(ggeffects)
 library(tidyverse)
 library(readxl)
 library(here)
+library(ggtext)
 #Load the data
-krat <- read.csv("final_krat_data_2026.csv")
+krat <- read.csv(here("final_krat_data_2026.csv"))
 #print(krat)
 ```
 
@@ -52,7 +53,7 @@ df %>%
         )+
   scale_color_manual(values=c("darkturquoise","palevioletred"))+
   labs(
-    x="Relative size of head (Head length / Body length)",
+    x="Relative size of head (Body length / Head length)",
     y="Finger length",
     title="Finger Length over Relative Head Size of 
     <br>*Dipodomys heermanni* and *Dipodomys venustus*"
