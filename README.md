@@ -7,7 +7,7 @@ These two locations have varying ecosystem structures. Fort Ord Natural Reserve 
 
 
 ## Hypothesis/Motivating Question:
-These new and standard field measurements can be used to differentiate between the species Dipodomys heermanni and Dipodomys Venustus. The new mesurements taken were Hind limb length, Foot Width, Wrist Width, Finger length, Hand Width, and Toe length. Each was analyzed for their variation between species, and the same was done with the standard measurements taken on small mammals. These included Body length, Tail length, Head length, Foot length, and Ear length.
+Can the new and standard field measurements taken be used to differentiate between the species Dipodomys heermanni and Dipodomys Venustus? Which measurements are good or poor predictors of species? The new mesurements taken were Hind limb length, Foot Width, Wrist Width, Finger length, Hand Width, and Toe length. Each was analyzed for their variation between species, and the same was done with the standard measurements taken on small mammals. These included Body length, Tail length, Head length, Foot length, and Ear length.
 
 
 ## Conclusions:
