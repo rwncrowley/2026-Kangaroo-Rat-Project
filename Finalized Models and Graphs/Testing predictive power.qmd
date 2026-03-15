@@ -52,14 +52,14 @@ theme_bw()+
     y="Finger Length (mm)",
     title="Finger length vs. Relative size of Dipodomys sp.")
 print(finger.vs.size)
-ggsave("finger.vs.size.png")
+ggsave("output2/finger.vs.size.png")
 
 #Running bernouilli model to predict species based on measurements
 m.bern.finger <- brm(Species ~ 1 + Finger_Length + relative_size, 
                         data = df, 
                         family = bernoulli(), 
                         chains = 4, iter = 2000,
-                        file = "output/m.bern.finger") 
+                        file = "output2/m.bern.finger") 
 
 #summary model
 summary(m.bern.finger)
@@ -248,7 +248,7 @@ m.bern.handW <- brm(Species ~ 1 + Hand_Width + relative_size,
                         data = df, 
                         family = bernoulli(), 
                         chains = 4, iter = 2000,
-                        file = "output/m.bern.handW") 
+                        file = "output2/m.bern.handW") 
 
 #summary model and plots, looks good!!!
 summary(m.bern.handW)
