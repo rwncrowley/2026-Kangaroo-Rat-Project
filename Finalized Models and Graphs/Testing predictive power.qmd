@@ -24,7 +24,7 @@ library(dplyr)
 library(ggtext)
 library(here)
 #Load the data
-krat <- read.csv("final_krat_data_2026.csv")
+krat <- read.csv(here("final_krat_data_2026.csv"))
 #print(krat)
 
 #Creating a new column to use as a proxy for the size of the individual by dividing head_length by body_length
