@@ -16,6 +16,9 @@ library(dplyr)
 library(ggtext)
 krat <- read.csv(here("final_krat_data_2026.csv"))
 #print(krat)
+knitr::opts_knit$set(
+  root.dir = here::here())
+
 ```
 
 ## Measurements:
@@ -94,6 +97,8 @@ pp_check(m.bern.body, type="scatter_avg")
 #Use function to check if these were right
 fitted(m.bern.body)
 ```
+
+
 
 ### Interpretation:
 
@@ -392,7 +397,7 @@ df %>%
   geom_point()+
   geom_smooth(method = "lm")+ theme_bw()+
   labs(
-    x="Relative size (Head length / Body length)",
+    x="Relative size (Body length / Head length)",
     y="Wrist Width",
     title="Wrist Wisth over Relative Size of <br>*Dipodomys heermanni* and *Dipodomys venustus*"
   )+ theme(
