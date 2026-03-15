@@ -10,4 +10,7 @@ run and interpretations of each. The Final Visualizations Quarto document shows
 two examples of the models run. One example is a "good" measurement that had high 
 predictive power between the species, and one is a "bad" measurement that does 
 not show strong predictive power between species. Final Visualizations 2 shows code
-to make the graphs in the slideshow. 
+to make the graphs in the slideshow. Most models run  use each measurement was tested 
+against the size proxy instead of on each other, as the goal was to determine which 
+measurements should be used in the future rather than what combination best 
+predicted each species. 
